@@ -1,23 +1,63 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import './index.css';  
+import Header from './components/Header';
+import SearchBar from './components/SearchBar';
+import GroceryList from './components/GroceryList';
+import Navigation from './components/Navigation';
+
+// Mock data structure
+const mockGroceryData = {
+  stores: {
+    "Walmart": {
+      items: [
+        { name: "Milk", quantity: 1, price: 3.99, recipeId: "1" },
+        { name: "Bread", quantity: 2, price: 2.49, recipeId: "1" }
+      ],
+      total: 8.97
+    },
+    "Target": {
+      items: [
+        { name: "Eggs", quantity: 1, price: 4.99, recipeId: "2" }
+      ],
+      total: 4.99
+    }
+  }
+};
 
 function App() {
+  const [groceryData] = useState(mockGroceryData);
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const handleSearch = (query) => {
+    console.log('Searching:', query);
+    // Implement search logic
+  };
+
+  const handleStoreFilter = (store) => {
+    console.log('Filtering by store:', store);
+    // Implement store filtering
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen bg-gray-50 pb-16">
+      <Header loggedIn={true} userName="John" />
+      <main>
+        <SearchBar 
+          onSearch={handleSearch}
+          availableStores={Object.keys(groceryData.stores)}
+          onStoreFilter={handleStoreFilter}
+        />
+        <GroceryList groceryData={groceryData} />
+      </main>
+      <Navigation 
+        onNavigate={handleNavigate}
+        currentPage={currentPage}
+      />
     </div>
   );
 }
