@@ -33,12 +33,12 @@ function App() {
 
   const handleSearch = (query) => {
     console.log('Searching:', query);
-    // Implement search logic
+
   };
 
   const handleStoreFilter = (store) => {
     console.log('Filtering by store:', store);
-    // Implement store filtering
+
   };
 
   const handleNavigate = (page) => {
@@ -49,11 +49,14 @@ function App() {
     <div className="min-h-screen bg-gray-50 pb-16">
       <Header loggedIn={true} userName="John" />
       <main>
-        <SearchBar 
-          onSearch={handleSearch}
-          availableStores={Object.keys(groceryData.stores)}
-          onStoreFilter={handleStoreFilter}
-        />
+        {/* Render SearchBar only on the Grocery List page */}
+        {currentPage === 'grocery-list' && (
+          <SearchBar 
+            onSearch={handleSearch}
+            availableStores={Object.keys(groceryData.stores)}
+            onStoreFilter={handleStoreFilter}
+          />
+        )}
         {currentPage === 'grocery-list' && <GroceryList groceryData={groceryData} />}
         {currentPage === 'recipe-book' && <Recipes />}
         {currentPage === 'profile' && <Profile/>}

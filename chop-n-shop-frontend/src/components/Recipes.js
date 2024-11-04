@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SaveIcon } from 'lucide-react';
 
 const recipesData = [
   { id: 1, name: 'Spaghetti Bolognese', ingredients: ['spaghetti', 'tomato sauce', 'ground beef', 'onion', 'garlic'] },
@@ -25,9 +26,12 @@ function Recipes() {
       />
       <div className="grid gap-4">
         {filteredRecipes.map(recipe => (
-          <div key={recipe.id} className="p-4 bg-white border rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">{recipe.name}</h2>
-            <p className="text-gray-600"><strong>Ingredients:</strong> {recipe.ingredients.join(', ')}</p>
+          <div key={recipe.id} className="p-4 bg-white border rounded-lg shadow-sm flex justify-between items-center">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">{recipe.name}</h2>
+              <p className="text-gray-600"><strong>Ingredients:</strong> {recipe.ingredients.join(', ')}</p>
+            </div>
+            <SaveIcon className="h-6 w-6 text-blue-500 cursor-pointer" />
           </div>
         ))}
       </div>

@@ -9,9 +9,9 @@ function Profile() {
 
   return (
     <div className="p-6">
-      <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Profile Picture and Info Section */}
-        <div className="flex items-center space-x-6 p-6 bg-gradient-to-r from-green-400 to-blue-500">
+        <div className="flex items-center space-x-6 p-12 bg-gradient-to-r from-green-400 to-blue-500">
           <img 
             className="w-24 h-24 rounded-full border-4 border-white" 
             src="https://via.placeholder.com/150" 
