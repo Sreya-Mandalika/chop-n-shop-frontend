@@ -9,14 +9,14 @@ import Navigation from './components/Navigation';
 // Mock data structure
 const mockGroceryData = {
   stores: {
-    "Walmart": {
+    "Trader Joes": {
       items: [
         { name: "Milk", quantity: 1, price: 3.99, recipeId: "1" },
         { name: "Bread", quantity: 2, price: 2.49, recipeId: "1" }
       ],
       total: 8.97
     },
-    "Target": {
+    "Whole Foods": {
       items: [
         { name: "Eggs", quantity: 1, price: 4.99, recipeId: "2" }
       ],
