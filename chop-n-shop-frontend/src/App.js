@@ -5,6 +5,8 @@ import Header from './components/Header';
 import SearchBar from './components/SearchBar';
 import GroceryList from './components/GroceryList';
 import Navigation from './components/Navigation';
+import Recipes from './components/Recipes';
+import Profile from './components/Profile';
 
 // Mock data structure
 const mockGroceryData = {
@@ -27,7 +29,7 @@ const mockGroceryData = {
 
 function App() {
   const [groceryData] = useState(mockGroceryData);
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState('profile');
 
   const handleSearch = (query) => {
     console.log('Searching:', query);
@@ -52,12 +54,16 @@ function App() {
           availableStores={Object.keys(groceryData.stores)}
           onStoreFilter={handleStoreFilter}
         />
-        <GroceryList groceryData={groceryData} />
+        {currentPage === 'grocery-list' && <GroceryList groceryData={groceryData} />}
+        {currentPage === 'recipe-book' && <Recipes />}
+        {currentPage === 'profile' && <Profile/>}
+
       </main>
       <Navigation 
         onNavigate={handleNavigate}
         currentPage={currentPage}
       />
+   
     </div>
   );
 }
