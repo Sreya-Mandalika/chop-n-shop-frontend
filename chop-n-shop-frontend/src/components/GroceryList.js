@@ -2,6 +2,7 @@ import React from 'react';
 
 function GroceryList({ groceryData }) {
   return (
+    
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
       {Object.entries(groceryData.stores).map(([store, data]) => (
         <div key={store} className="bg-white rounded-lg shadow">
