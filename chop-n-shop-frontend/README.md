@@ -13,7 +13,7 @@
 /price-comparison - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
 
 ## WireFrame
-[public/wireframe.png]
+(public/wireframe.png)
 
 ## Project Setup
 To set up and run the project locally, follow these steps:
