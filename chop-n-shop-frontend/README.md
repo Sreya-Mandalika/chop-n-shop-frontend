@@ -1,7 +1,9 @@
-
 # Chop-n-shop Frontend
 
 ## Overview
+
+This week we worked on developing a React app to showcase our grocery shopping assistance features.
+We incorporated several interactive components in price comparing, using real grocery store data.
 
 
 ## Site map
@@ -31,3 +33,13 @@ To set up and run the project locally, follow these steps:
 2. **Run the application:** 
   ```bash
    npm start 
+
+## Development process
+
+**Design Decisions:**
+- We designed modular components that were consistent across the pages in our Figma wireframes. Using Figma for this made the collaboration process flow smoother.
+- We integrated real life data to make even the prototype useful.
+
+**Technical Choices:**
+- We were super happy to apply everything we have learned so far about how to use React as it simplified the process a lot.
+- We have very limited CSS use for styling.
