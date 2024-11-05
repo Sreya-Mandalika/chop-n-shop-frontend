@@ -16,7 +16,14 @@ function Recipes() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Recipes</h1>
+      {/* Page Header */}
+      <div className="bg-white shadow rounded-lg p-6 mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Recipe Collection</h1>
+        <p className="text-gray-600">
+          Browse your saved recipes, find cooking inspiration, and easily add ingredients to your shopping list.
+        </p>
+      </div>
+
       <input
         type="text"
         placeholder="Search recipes..."

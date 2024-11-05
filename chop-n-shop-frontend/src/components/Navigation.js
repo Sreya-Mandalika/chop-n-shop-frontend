@@ -1,11 +1,12 @@
 import React from 'react';
-import { User, Book, ShoppingCart, LineChart } from 'lucide-react';
+import { Home, User, Book, ShoppingCart, LineChart } from 'lucide-react';
 
 function Navigation({ onNavigate, currentPage }) {
   const navItems = [
+    { id: 'home', icon: Home, label: 'Home' },
     { id: 'profile', icon: User, label: 'Profile' },
-    { id: 'recipe-book', icon: Book, label: 'Recipes' },
     { id: 'grocery-list', icon: ShoppingCart, label: 'Lists' },
+    { id: 'recipe-book', icon: Book, label: 'Recipes' },
     { id: 'price-comparison', icon: LineChart, label: 'Prices' }
   ];
 
