@@ -9,6 +9,7 @@ import Navigation from './components/Navigation';
 import Recipes from './components/Recipes';
 import Profile from './components/Profile';
 import Home from './components/Home';
+import PriceComparison from './components/Price';
 
 // Mock data structure for current list
 const mockCurrentList = {
@@ -175,15 +176,13 @@ function App() {
           <Recipes />
         )}
         
-        {currentPage === 'price-comparison' && (
-          <div className="p-4">
-            <h2 className="text-xl font-semibold">Price Comparison</h2>
-            <p className="text-gray-600">Coming soon...</p>
-          </div>
-        )}
+        
         
         {currentPage === 'profile' && (
           <Profile />
+        )} 
+        {currentPage === 'price-comparison' && (
+          <PriceComparison />
         )}
       </main>
 
