@@ -6,13 +6,13 @@
 
 ## Site map
 
-/home - Home page
-/profile - Profile of the User
-/grocery-list - Grocery lists page, create new, add items
-/recipe-book - Recipe page, search recipe, save for later
+/home - Home page   
+/profile - Profile of the User   
+/grocery-list - Grocery lists page, create new, add items   
+/recipe-book - Recipe page, search recipe, save for later   
 /price-comparison - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
 
-## [Link to Initial Main Project File](app.js) 
+## [Link to Initial Main Project File](src/app.js) 
 
 ## Project Setup
 To set up and run the project locally, follow these steps:
