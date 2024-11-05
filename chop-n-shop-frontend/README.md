@@ -12,7 +12,8 @@
 /recipe-book - Recipe page, search recipe, save for later   
 /price-comparison - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
 
-## [Link to Initial Main Project File](src/app.js) 
+## WireFrame
+[public/wireframe.png]
 
 ## Project Setup
 To set up and run the project locally, follow these steps:
