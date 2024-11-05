@@ -3,7 +3,7 @@ import { Calendar } from 'lucide-react';
 
 function GroceryList() {
   const previousLists = [
-    {
+    { 
       id: 1,
       date: '2024-03-28',
       stores: ['Trader Joe\'s', 'Whole Foods'],

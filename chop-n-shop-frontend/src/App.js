@@ -190,6 +190,7 @@ function App() {
         currentPage={currentPage} 
         onNavigate={handleNavigate}
       />
+      
     </div>
   );
 }
