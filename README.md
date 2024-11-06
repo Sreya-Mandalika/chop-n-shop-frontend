@@ -1,4 +1,4 @@
-# Chop-n-shop Frontend
+# Chop-N-Shop Frontend
 
 ## Overview
 
@@ -33,7 +33,7 @@ To set up and run the project locally, follow these steps:
    ```bash
    git clone https://github.com/Sreya-Mandalika/chop-n-shop-frontend.git
    cd chop-n-shop-frontend
-3. **Install dependencies:**
+3. **Install requirements.txt:**
    ```bash
    npm install react@latest react-dom@latest
    npm install lucide-react
