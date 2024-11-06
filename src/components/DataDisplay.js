@@ -1,47 +1,93 @@
-import React, { useEffect, useState } from 'react';
+export async function POST(req) {
+  try {
+    // parse the request body to extract any parameters if needed for filtering
+    const { groceryItem } = await req.json();
 
-// Component to display data from API
-const DataDisplay = () => {
-  const [data, setData] = useState([]);  
-  // loading state  //  
-  const [loading, setLoading] = useState(true);
-  // error state
-  const [error, setError] = useState(null);   
-
-  // Fetch data from the API when the component mounts
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(''); 
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
+    // mock data for grocery items and meal recommendations
+    const mockData = {
+      groceryItems: [
+        {
+          "name": "Bananas",
+          "category": "Fruits",
+          "price": 0.50,
+          "unit": "per lb",
+          "store": "Whole Foods",
+          "availability": "In Stock",
+          
+        },
+        {
+          "name": "Almond Milk",
+          "category": "Dairy Alternatives",
+          "price": 3.99,
+          "unit": "per gallon",
+          "store": "Trader Joe's",
+          
+        },
+        {
+          "name": "Organic Chicken Breast",
+          "category": "Meat",
+          "price": 5.99,
+          "unit": "per lb",
+          "store": "Walmart",
+          
         }
-        const result = await response.json();
-        setData(result);          
-      } catch (err) {
-        setError(err.message);    
-      } finally {
-       // Update loading state
-        setLoading(false);        
-      }
+      ],
+      recipeRecommendations: [
+        {
+          "recipe": "Spaghetti with Marinara Sauce",
+          "ingredients": ["Spaghetti", "Tomatoes", "Garlic", "Olive Oil", "Basil"],
+          "prepTime": "30 minutes",
+          "nutrition": {
+            "calories": 400,
+            "protein": "15g",
+            "fat": "10g",
+            "carbs": "70g"
+          },
+          "instructions": "Boil pasta, prepare sauce by cooking tomatoes with garlic and basil.",
+          "link": "https://example.com/spaghetti-marinara"
+        },
+        {
+          "recipe": "Banana Smoothie",
+          "ingredients": ["Banana", "Almond Milk", "Honey", "Ice Cubes"],
+          "prepTime": "5 minutes",
+          "nutrition": {
+            "calories": 200,
+            "protein": "5g",
+            "fat": "2g",
+            "carbs": "45g"
+          },
+          "instructions": "Blend all ingredients until smooth.",
+          "link": "https://example.com/banana-smoothie"
+        },
+        {
+          "recipe": "Grilled Chicken Salad",
+          "ingredients": ["Chicken Breast", "Lettuce", "Cherry Tomatoes", "Cucumber", "Olive Oil"],
+          "prepTime": "20 minutes",
+          "nutrition": {
+            "calories": 350,
+            "protein": "30g",
+            "fat": "15g",
+            "carbs": "10g"
+          },
+          "instructions": "Grill the chicken and toss with salad ingredients.",
+          "link": "https://example.com/grilled-chicken-salad"
+        }
+      ]
     };
 
-    fetchData();
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-  return (
-    <div>
-      <h2>Data from API</h2>
-      <ul>
-        {data.map((item, index) => (
-          <li key={index}>{item.name}</li> 
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default DataDisplay;
+    // respond with the mock data
+    return new Response(JSON.stringify(mockData), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+}
