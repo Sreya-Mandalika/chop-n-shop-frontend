@@ -24,7 +24,7 @@ We incorporated several interactive components in price comparing, using real gr
 /price-comparison - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
 
 ## WireFrame
-![WireFrame](public/Wireframe.png)
+![WireFrame](public/WireFrame.png)
 
 ## Project Setup
 To set up and run the project locally, follow these steps:
