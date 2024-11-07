@@ -38,11 +38,11 @@ We worked on developing an inital draft of our React app frontend to showcase Ch
 
 ## Site Map
 
-/home - Home page   
-/profile - Profile of the User   
-/grocery-list - Grocery lists page, create new, add items   
-/recipe-book - Recipe page, search recipe, save for later   
-/price-comparison - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
+`/home` - Home page   
+`/profile` - Profile of the User   
+`/grocery-list` - Grocery lists page, create new, add items   
+`/recipe-book` - Recipe page, search recipe, save for later   
+`/price-comparison` - Price Comparison page, compares price of an individual item, compares price for the whole grocery list
 
 ## WireFrame
 ![WireFrame](public/WireFrame.png)
