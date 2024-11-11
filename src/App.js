@@ -10,6 +10,7 @@ import Recipes from './components/Recipes';
 import Profile from './components/Profile';
 import Home from './components/Home';
 import PriceComparison from './components/Price';
+import UserLogin from './components/UserLogin';
 
 // Mock data structure for current list
 const mockCurrentList = {
@@ -43,6 +44,7 @@ function App() {
   // State management
   const [currentList, setCurrentList] = useState(mockCurrentList);
   const [currentPage, setCurrentPage] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUser] = useState({
     name: "John",
     isLoggedIn: true
@@ -140,57 +142,61 @@ function App() {
     });
   };
 
+  const handleLoginOrSignup = (formData) => {
+    // Implement your login or signup logic here
+    console.log('Form data:', formData);
+    setIsLoggedIn(true);
+  };
+
   return (
     <div className="flex flex-col h-screen">
-      <Header 
-        loggedIn={loggedInUser.isLoggedIn} 
-        userName={loggedInUser.name} 
-      />
-      
-      <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
-        {/* Show SearchBar only on necessary pages */}
-        {(currentPage === 'grocery-list' || currentPage === 'home') && (
-          <SearchBar 
-            onSearch={handleSearch} 
-            onStoreFilter={handleStoreFilter}
-            availableStores={mockStores}
+      {!isLoggedIn ? (
+        <UserLogin onLoginOrSignup={handleLoginOrSignup} />
+      ) : (
+        <>
+          <Header loggedIn={isLoggedIn} userName={loggedInUser.name} />
+          <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
+            {/* Show SearchBar only on necessary pages */}
+            {(currentPage === 'grocery-list' || currentPage === 'home') && (
+              <SearchBar 
+                onSearch={handleSearch} 
+                onStoreFilter={handleStoreFilter}
+                availableStores={mockStores}
+              />
+            )}
+            
+            {/* Page Content */}
+            {currentPage === 'home' && (
+              <Home 
+                groceryData={currentList}
+                onAddItem={handleAddItem}
+                onRemoveItem={handleRemoveItem}
+                onUpdateQuantity={handleUpdateItemQuantity}
+                availableStores={mockStores}
+              />
+            )}
+            
+            {currentPage === 'grocery-list' && (
+              <GroceryList />
+            )}
+            
+            {currentPage === 'recipe-book' && (
+              <Recipes />
+            )}
+            
+            {currentPage === 'profile' && (
+              <Profile />
+            )} 
+            {currentPage === 'price-comparison' && (
+              <PriceComparison />
+            )}
+          </main>
+          <Navigation 
+            currentPage={currentPage} 
+            onNavigate={handleNavigate}
           />
-        )}
-        
-        {/* Page Content */}
-        {currentPage === 'home' && (
-          <Home 
-            groceryData={currentList}
-            onAddItem={handleAddItem}
-            onRemoveItem={handleRemoveItem}
-            onUpdateQuantity={handleUpdateItemQuantity}
-            availableStores={mockStores}
-          />
-        )}
-        
-        {currentPage === 'grocery-list' && (
-          <GroceryList />
-        )}
-        
-        {currentPage === 'recipe-book' && (
-          <Recipes />
-        )}
-        
-        
-        
-        {currentPage === 'profile' && (
-          <Profile />
-        )} 
-        {currentPage === 'price-comparison' && (
-          <PriceComparison />
-        )}
-      </main>
-
-      <Navigation 
-        currentPage={currentPage} 
-        onNavigate={handleNavigate}
-      />
-      
+        </>
+      )}
     </div>
   );
 }
