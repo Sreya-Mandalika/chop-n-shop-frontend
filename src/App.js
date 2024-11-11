@@ -205,4 +205,166 @@ import Register from './components/Register';
 // }
 //Code by Eyerusalem Modifying and adding Login and register Logic starts here:
 
+const mockCurrentList = {
+  stores: {
+    "Trader Joes": {
+      items: [
+        { name: "Milk", quantity: 1, price: 3.99, recipeId: "1" },
+        { name: "Bread", quantity: 2, price: 2.49, recipeId: "1" }
+      ],
+      total: 8.97
+    },
+    "Whole Foods": {
+      items: [
+        { name: "Eggs", quantity: 1, price: 4.99, recipeId: "2" }
+      ],
+      total: 4.99
+    }
+  }
+};
+
+const mockStores = ["Trader Joes", "Whole Foods", "Kroger", "Walmart", "Target"];
+
+function App() {
+  const [currentList, setCurrentList] = useState(mockCurrentList);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setLoggedInUser(userData);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setLoggedInUser(null);
+    setIsLoggedIn(false);
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleSearch = (query) => {
+    console.log('Searching:', query);
+  };
+
+  const handleStoreFilter = (store) => {
+    console.log('Filtering by store:', store);
+  };
+
+  const handleAddItem = (item) => {
+    const { store, name, quantity, price } = item;
+    
+    setCurrentList(prevList => {
+      const newList = { ...prevList };
+      if (!newList.stores[store]) {
+        newList.stores[store] = {
+          items: [],
+          total: 0
+        };
+      }
+      newList.stores[store].items.push({
+        name,
+        quantity,
+        price,
+        recipeId: null 
+      });
+      newList.stores[store].total = newList.stores[store].items.reduce(
+        (sum, item) => sum + (item.price * item.quantity),
+        0
+      );
+      
+      return newList;
+    });
+  };
+
+  const handleRemoveItem = (store, itemIndex) => {
+    setCurrentList(prevList => {
+      const newList = { ...prevList };
+      const storeData = newList.stores[store];
+      
+      if (storeData && storeData.items) {
+        storeData.items.splice(itemIndex, 1);
+        storeData.total = storeData.items.reduce(
+          (sum, item) => sum + (item.price * item.quantity),
+          0
+        );
+        if (storeData.items.length === 0) {
+          delete newList.stores[store];
+        }
+      }
+      
+      return newList;
+    });
+  };
+
+  const handleUpdateItemQuantity = (store, itemIndex, newQuantity) => {
+    setCurrentList(prevList => {
+      const newList = { ...prevList };
+      const item = newList.stores[store].items[itemIndex];
+      
+      if (item) {
+        item.quantity = newQuantity;
+        newList.stores[store].total = newList.stores[store].items.reduce(
+          (sum, item) => sum + (item.price * item.quantity),
+          0
+        );
+      }
+      
+      return newList;
+    });
+  };
+
+  return (
+    <Router>
+      <div className="flex flex-col h-screen">
+        {!isLoggedIn ? (
+          <Routes>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Register onRegister={handleLogin} />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        ) : (
+          <>
+            <Header loggedIn={isLoggedIn} userName={loggedInUser?.name} onLogout={handleLogout} />
+            <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
+              {(currentPage === 'grocery-list' || currentPage === 'home') && (
+                <SearchBar 
+                  onSearch={handleSearch} 
+                  onStoreFilter={handleStoreFilter}
+                  availableStores={mockStores}
+                />
+              )}
+              
+              <Routes>
+                <Route 
+                  path="/home" 
+                  element={
+                    <Home 
+                      groceryData={currentList}
+                      onAddItem={handleAddItem}
+                      onRemoveItem={handleRemoveItem}
+                      onUpdateQuantity={handleUpdateItemQuantity}
+                      availableStores={mockStores}
+                    />
+                  }
+                />
+                <Route path="/grocery-list" element={<GroceryList />} />
+                <Route path="/recipe-book" element={<Recipes />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/price-comparison" element={<PriceComparison />} />
+                <Route path="*" element={<Navigate to="/home" />} />
+              </Routes>
+            </main>
+            <Navigation 
+              currentPage={currentPage} 
+              onNavigate={handleNavigate}
+            />
+          </>
+        )}
+      </div>
+    </Router>
+  );
+}
 export default App;

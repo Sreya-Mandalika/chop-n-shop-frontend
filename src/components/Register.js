@@ -17,7 +17,7 @@ function Register({ onRegister }) {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API}/add_user/`, {
+      const response = await fetch(`${API}/Register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
