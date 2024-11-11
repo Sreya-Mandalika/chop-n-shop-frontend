@@ -11,6 +11,8 @@ import Profile from './components/Profile';
 import Home from './components/Home';
 import PriceComparison from './components/Price';
 import UserLogin from './components/UserLogin';
+import Login from './components/Login';
+import Register from './components/Register';
 
 
 // Mock data structure for current list
