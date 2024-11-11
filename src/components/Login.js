@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API = import.meta.env.REACT_BACKEND_URL;
+const API = import.meta.env.REACT_APP_API_URL;
 
 function Login({ onLogin }) {
   const navigate = useNavigate();

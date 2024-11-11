@@ -12,6 +12,7 @@ import Home from './components/Home';
 import PriceComparison from './components/Price';
 import UserLogin from './components/UserLogin';
 
+
 // Mock data structure for current list
 const mockCurrentList = {
   stores: {
