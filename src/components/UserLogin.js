@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
 import { LucideUser, LucideKey} from 'lucide-react';
+import Select from 'react-select';
+
+const dietaryOptions = [
+  { value: 'vegetarian', label: 'Vegetarian' },
+  { value: 'vegan', label: 'Vegan' },
+  { value: 'glutenFree', label: 'Gluten-Free' },
+  { value: 'dairyFree', label: 'Dairy-Free' },
+  { value: 'kosher', label: 'Kosher' },
+  { value: 'halal', label: 'Halal' },
+  { value: 'paleo', label: 'Paleo' },
+  { value: 'keto', label: 'Keto' }
+];
 
 const UserLogin = () => {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -7,13 +19,17 @@ const UserLogin = () => {
     email: '',
     password: '',
     firstName: '',
-    dietaryPreferences: '',
+    dietaryPreferences: [],
     allergens: '',
     preferredStores: ''
   });
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleDietaryPreferencesChange = (options) => {
+    setFormData({ ...formData, dietaryPreferences: options.map((option) => option.value) });
   };
 
   const handleSubmit = (e) => {
@@ -54,14 +70,17 @@ const UserLogin = () => {
                 <label htmlFor="dietaryPreferences" className="block font-medium text-gray-700 mb-1">
                   Dietary Preferences
                 </label>
-                <input
-                  type="text"
-                  id="dietaryPreferences"
+                <Select
+                  isMulti
                   name="dietaryPreferences"
-                  className="pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your dietary preferences"
-                  value={formData.dietaryPreferences}
-                  onChange={handleInputChange}
+                  options={dietaryOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={handleDietaryPreferencesChange}
+                  value={formData.dietaryPreferences.map((preference) => ({
+                    value: preference,
+                    label: dietaryOptions.find((option) => option.value === preference).label
+                  }))}
                 />
               </div>
 
@@ -92,9 +111,9 @@ const UserLogin = () => {
                   onChange={handleInputChange}
                 >
                   <option value="">Select preferred stores</option>
-                  <option value="wholeGoods">Whole Goods</option>
+                  <option value="wholeFoods">Whole Foods</option>
                   <option value="traderJoes">Trader Joe's</option>
-                  <option value="neither">Neither</option>
+                  <option value="noPreference">No Preference</option>
                 </select>
               </div>
             </>
