@@ -218,6 +218,7 @@ import Profile from './components/Profile';
 import Home from './components/Home';
 import PriceComparison from './components/Price';
 import UserLogin from './components/UserLogin';
+import DataDisplay from './components/DataDisplay';
 
 // Mock data structure for current list
 const mockCurrentList = {
