@@ -1,3 +1,31 @@
+# Chop N' Shop Week 9: Full Stack
+This is prototype fullstack application for Chop N' Shop, our grocery shopping assistant. We integrated several of our **FastAPI** endpoints with our **MongoDB** database and Frontend components. This prototype will allow you to register a new user, authenticate an existing user, and retrieve a recipe.
+
+## Setting Up & Running Instructions
+
+### Frontend Setup
+#### 1. Clone the Frontend Repository
+```
+https://github.com/Sreya-Mandalika/chop-n-shop-frontend.git
+cd chop-n-shop-frontend
+```
+#### 2. Install Frontend Dependencies
+Navigate to the project directory and install the necessary dependencies using npm:
+```
+npm install
+npm install react@18.2.0 react-dom@18.2.0 react-router-dom@6.14.0
+npm install lucide-react
+npm install -D tailwindcss postcss autoprefixer
+npm install @radix-ui/react-icons class-variance-authority clsx tailwindcss-animate @shadcn/ui
+```
+#### 3. Run the Frontend
+```
+npm start
+```
+This will start the React development server and the frontend will be available at http://localhost:3000.
+
+
+
 # Chop-N-Shop Frontend
 
 ## Overview
