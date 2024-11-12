@@ -357,7 +357,7 @@ function App() {
         console.log("User logged in:", userData);
       };
       
-      const handleMyDataClick = () => {
+      const handleSearchSubmit = () => {
         setShowDataDisplay(true);
       };
   return (
