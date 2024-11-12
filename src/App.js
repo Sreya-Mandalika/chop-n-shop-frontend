@@ -370,9 +370,14 @@ function App() {
           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
             <SearchBar onSearch={handleSearch} onStoreFilter={handleStoreFilter} availableStores={mockStores} />
             
-            <button onClick={handleMyDataClick}>MY DATA</button>
-
-            {showDataDisplay && <DataDisplay />} 
+            <input 
+              type="text" 
+              placeholder="Search items..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} 
+            />
+            <button onClick={handleSearchSubmit}>Search</button>
+            {showDataDisplay && <DataDisplay searchTerm={searchTerm} />}
             <Routes>
               <Route index element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />

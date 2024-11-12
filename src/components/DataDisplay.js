@@ -1,45 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function DataDisplay({ showData }) {
-  const [items, setItems] = useState([]);
+function DataDisplay({ searchTerm }) {
+  const [recipe, setRecipe] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const fetchRecipe = async () => {
+    setLoading(true);
+    setError(null);
 
-  // Fetch data when `showData` becomes true
-  useEffect(() => {
-    if (showData) {
-      const fetchItems = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get('http://localhost:8000/items');
-          setItems(response.data);
-        } catch (err) {
-          setError("Error retrieving items");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchItems();
+    try {
+      const response = await axios.get(`http://localhost:8000/recipes/${searchTerm}`);
+      setRecipe(response.data);
+    } catch (err) {
+      setError("Recipe not found");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, [showData]);
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      fetchRecipe(); 
+    }
+  }, [searchTerm]);
 
   return (
     <div>
-      <h1>Item List</h1>
-      {loading && <p>Loading items...</p>}
+      <h1>Recipe Search</h1>
+      
+      {loading && <p>Loading recipe...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {!loading && items.length === 0 && <p>No items found.</p>}
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <h2>{item.name}</h2>
-            <p>Price: ${item.price}</p>
-            <p>Description: {item.description}</p>
-          </li>
-        ))}
-      </ul>
+      {!loading && !recipe && !error && <p>No recipe found for "{searchTerm}".</p>}
+      {recipe && (
+        <div>
+          <h2>{recipe.Recipe_name}</h2>
+          <p>Recipe ID: {recipe.Recipe_id}</p>
+          <h3>Ingredients:</h3>
+          <ul>
+            {recipe.Ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
