@@ -371,8 +371,8 @@ function App() {
           <Header loggedIn={isLoggedIn} userName={loggedInUser.name}/>
           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
             <SearchBar onSearch={handleSearch} onStoreFilter={handleStoreFilter} availableStores={mockStores} />
-            
-            <input 
+            {showDataDisplay}
+            {/* <input 
               type="text" 
               placeholder="Search items..." 
               value={searchTerm}
@@ -380,7 +380,7 @@ function App() {
             />
             <button onClick={handleSearchSubmit}>Search</button>
 
-            {showDataDisplay && <DataDisplay searchTerm={searchTerm} />}
+            {showDataDisplay && <DataDisplay searchTerm={searchTerm} />} */}
             <Routes>
               <Route index element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />
