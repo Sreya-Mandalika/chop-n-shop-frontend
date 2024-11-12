@@ -253,6 +253,7 @@ function App() {
   const [currentList, setCurrentList] = useState(mockCurrentList);
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDataDisplay, setShowDataDisplay] = useState(false);
   const [loggedInUser] = useState({
     name: "John",
     isLoggedIn: true
@@ -356,7 +357,9 @@ function App() {
         console.log("User logged in:", userData);
       };
       
-  
+      const handleMyDataClick = () => {
+        setShowDataDisplay(true);
+      };
   return (
     <div className="flex flex-col h-screen">
       {!isLoggedIn ? (
@@ -367,12 +370,16 @@ function App() {
           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
             <SearchBar onSearch={handleSearch} onStoreFilter={handleStoreFilter} availableStores={mockStores} />
             
+            <button onClick={handleMyDataClick}>MY DATA</button>
+
+            {showDataDisplay && <DataDisplay />} 
             <Routes>
               <Route index element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />
               <Route path="/recipe-book" element={<Recipes />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/price-comparison" element={<PriceComparison />} />
+              <Route path="/price-comparison" element={<PriceComparison />}/>
+              <Route path="/data-display" element={<DataDisplay />} />
             </Routes>
           </main>
           <Navigation />

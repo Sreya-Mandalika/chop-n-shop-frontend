@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function ItemList() {
+function DataDisplay({ showData }) {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchItems = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/items');
-      setItems(response.data);
-      setError(null);
-    } catch (err) {
-      setError("Error retrieving items");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch data when `showData` becomes true
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (showData) {
+      const fetchItems = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.get('http://localhost:8000/items');
+          setItems(response.data);
+        } catch (err) {
+          setError("Error retrieving items");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchItems();
+    }
+  }, [showData]);
 
   return (
     <div>
@@ -42,4 +44,4 @@ function ItemList() {
   );
 }
 
-export default ItemList;
+export default DataDisplay;
