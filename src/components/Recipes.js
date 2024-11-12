@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import DataDisplay from './DataDisplay'; // Make sure to import DataDisplay
+import DataDisplay from './DataDisplay'; 
 function Recipes() {
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchSubmit = () => {
-    // You can handle extra search logic if needed
   };
   return (
     <div className="p-6">
