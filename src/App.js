@@ -205,8 +205,7 @@
 //   );
 // }
 
-// export default App;
-import React, { useState } from 'react';
+// export default App;import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Header from './components/Header';
@@ -254,6 +253,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDataDisplay, setShowDataDisplay] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // Define searchTerm and setSearchTerm
   const [loggedInUser] = useState({
     name: "John",
     isLoggedIn: true
@@ -352,14 +352,15 @@ function App() {
   };
 
   const handleLoginOrSignup = (userData) => {
-        setIsLoggedIn(true);
-        setCurrentPage('home');  // This ensures the homepage renders
-        console.log("User logged in:", userData);
-      };
-      
-      const handleSearchSubmit = () => {
-        setShowDataDisplay(true);
-      };
+    setIsLoggedIn(true);
+    setCurrentPage('home');  // This ensures the homepage renders
+    console.log("User logged in:", userData);
+  };
+
+  const handleSearchSubmit = () => {
+    setShowDataDisplay(true);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       {!isLoggedIn ? (
@@ -377,6 +378,7 @@ function App() {
               onChange={(e) => setSearchTerm(e.target.value)} 
             />
             <button onClick={handleSearchSubmit}>Search</button>
+
             {showDataDisplay && <DataDisplay searchTerm={searchTerm} />}
             <Routes>
               <Route index element={<Home groceryData={currentList} />} />
@@ -392,5 +394,6 @@ function App() {
       )}
     </div>
   );
-};
+}
+
 export default App;
