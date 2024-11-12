@@ -1,69 +1,79 @@
-import React from 'react';
-import { Calendar } from 'lucide-react';
+import React, { useState, useEffect } from "react";
 
-function GroceryList() {
-  const previousLists = [
-    { 
-      id: 1,
-      date: '2024-03-28',
-      stores: ['Trader Joe\'s', 'Whole Foods'],
-      total: 84.52
-    },
-    {
-      id: 2,
-      date: '2024-03-21',
-      stores: ['Kroger'],
-      total: 56.23
-    },
-    {
-      id: 3,
-      date: '2024-03-14',
-      stores: ['Trader Joe\'s', 'Walmart'],
-      total: 92.15
+const GroceryListApp = () => {
+  const [groceryList, setGroceryList] = useState([]);
+  const [newItem, setNewItem] = useState({ item_name: "", quantity: 1, store_name: "" });
+  const userId = "670566bb2a7dbfa83fda986b"; // Replace with the actual user ID
+
+  // Fetch the grocery list from the backend
+  useEffect(() => {
+    fetchGroceryList();
+  }, []);
+
+  const fetchGroceryList = async () => {
+    try {
+      const response = await fetch(`/users/${userId}/grocery-list/`);
+      if (!response.ok) throw new Error("Failed to fetch grocery list.");
+      const data = await response.json();
+      setGroceryList(data);
+    } catch (error) {
+      console.error("Error fetching grocery list:", error);
     }
-  ];
+  };
+
+  // Add a new item to the grocery list
+  const addGroceryItem = async () => {
+    try {
+      const response = await fetch(`/users/${userId}/grocery-list/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      });
+
+      if (!response.ok) throw new Error("Failed to add grocery item.");
+      const data = await response.json();
+      setGroceryList([...groceryList, data.grocery_item]);
+      setNewItem({ item_name: "", quantity: 1, store_name: "" }); // Reset form
+    } catch (error) {
+      console.error("Error adding grocery item:", error);
+    }
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-      {/* Page Header */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Shopping Lists History</h1>
-        <p className="text-gray-600">
-          View and manage your past shopping lists. Track your spending patterns and reuse previous lists for faster shopping.
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        {previousLists.map(list => (
-          <div key={list.id} className="bg-white rounded-lg shadow">
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-gray-500" />
-                <div>
-                  <h3 className="font-medium text-gray-900">
-                    {new Date(list.date).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {list.stores.join(', ')}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-medium text-gray-900">${list.total.toFixed(2)}</p>
-                <button className="text-sm text-blue-600 hover:text-blue-700">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
+    <div>
+      <h1>Grocery List</h1>
+      <ul>
+        {groceryList.map((item) => (
+          <li key={item.item_id}>
+            {item.item_name} - {item.quantity} {item.store_name && `from ${item.store_name}`}
+          </li>
         ))}
-      </div>
+      </ul>
+
+      <h2>Add New Item</h2>
+      <input
+        type="text"
+        placeholder="Item Name"
+        value={newItem.item_name}
+        onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
+      />
+      <input
+        type="number"
+        placeholder="Quantity"
+        value={newItem.quantity}
+        onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) })}
+      />
+      <input
+        type="text"
+        placeholder="Store Name (optional)"
+        value={newItem.store_name}
+        onChange={(e) => setNewItem({ ...newItem, store_name: e.target.value })}
+      />
+      <button onClick={addGroceryItem}>Add Item</button>
     </div>
   );
-}
+};
 
-export default GroceryList;
+export default GroceryListApp;

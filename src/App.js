@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import './App.css';
-import './index.css';
+import { useState } from 'react';
+// import './App.css';
+// import './index.css';
 
-import Header from './components/Header';
-import SearchBar from './components/SearchBar';
-import GroceryList from './components/GroceryList';
-import Navigation from './components/Navigation';
-import Recipes from './components/Recipes';
-import Profile from './components/Profile';
-import Home from './components/Home';
-import PriceComparison from './components/Price';
-import UserLogin from './components/UserLogin';
-import Login from './components/Login';
-import Register from './components/Register';
+// import Header from './components/Header';
+// import SearchBar from './components/SearchBar';
+// import GroceryList from './components/GroceryList';
+// import Navigation from './components/Navigation';
+// import Recipes from './components/Recipes';
+// import Profile from './components/Profile';
+// import Home from './components/Home';
+// import PriceComparison from './components/Price';
+// import UserLogin from './components/UserLogin';
+// // import Login from './components/Login';
+// // import Register from './components/Register';
 
 
 // // Mock data structure for current list
@@ -145,11 +145,11 @@ import Register from './components/Register';
 //     });
 //   };
 
-//   const handleLoginOrSignup = (formData) => {
-//     // Implement your login or signup logic here
-//     console.log('Form data:', formData);
+//   const handleLoginOrSignup = (userData) => {
 //     setIsLoggedIn(true);
+//     console.log("User logged in:", userData);
 //   };
+  
 
 //   return (
 //     <div className="flex flex-col h-screen">
@@ -203,8 +203,22 @@ import Register from './components/Register';
 //     </div>
 //   );
 // }
-//Code by Eyerusalem Modifying and adding Login and register Logic starts here:
 
+// export default App;
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+import Header from './components/Header';
+import SearchBar from './components/SearchBar';
+import GroceryList from './components/GroceryList';
+import Navigation from './components/Navigation';
+import Recipes from './components/Recipes';
+import Profile from './components/Profile';
+import Home from './components/Home';
+import PriceComparison from './components/Price';
+import UserLogin from './components/UserLogin';
+
+// Mock data structure for current list
 const mockCurrentList = {
   stores: {
     "Trader Joes": {
@@ -223,34 +237,38 @@ const mockCurrentList = {
   }
 };
 
-const mockStores = ["Trader Joes", "Whole Foods", "Kroger", "Walmart", "Target"];
+// Mock data for available stores
+const mockStores = [
+  "Trader Joes",
+  "Whole Foods",
+  "Kroger",
+  "Walmart",
+  "Target"
+];
 
 function App() {
+  // State management
   const [currentList, setCurrentList] = useState(mockCurrentList);
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser] = useState({
+    name: "John",
+    isLoggedIn: true
+  });
 
-  const handleLogin = (userData) => {
-    setLoggedInUser(userData);
-    setIsLoggedIn(true);
-  };
-
-  const handleLogout = () => {
-    setLoggedInUser(null);
-    setIsLoggedIn(false);
-  };
-
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
-  };
-
+  // Handlers
   const handleSearch = (query) => {
     console.log('Searching:', query);
+    // Implement search functionality
   };
 
   const handleStoreFilter = (store) => {
     console.log('Filtering by store:', store);
+    // Implement store filtering
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
   };
 
   const handleAddItem = (item) => {
@@ -258,18 +276,24 @@ function App() {
     
     setCurrentList(prevList => {
       const newList = { ...prevList };
+      
+      // If store doesn't exist, create it
       if (!newList.stores[store]) {
         newList.stores[store] = {
           items: [],
           total: 0
         };
       }
+      
+      // Add new item to store
       newList.stores[store].items.push({
         name,
         quantity,
         price,
-        recipeId: null 
+        recipeId: null // Can be updated when adding from recipes
       });
+      
+      // Recalculate store total
       newList.stores[store].total = newList.stores[store].items.reduce(
         (sum, item) => sum + (item.price * item.quantity),
         0
@@ -285,11 +309,16 @@ function App() {
       const storeData = newList.stores[store];
       
       if (storeData && storeData.items) {
+        // Remove the item
         storeData.items.splice(itemIndex, 1);
+        
+        // Recalculate store total
         storeData.total = storeData.items.reduce(
           (sum, item) => sum + (item.price * item.quantity),
           0
         );
+        
+        // If store has no items, remove the store
         if (storeData.items.length === 0) {
           delete newList.stores[store];
         }
@@ -305,7 +334,10 @@ function App() {
       const item = newList.stores[store].items[itemIndex];
       
       if (item) {
+        // Update quantity
         item.quantity = newQuantity;
+        
+        // Recalculate store total
         newList.stores[store].total = newList.stores[store].items.reduce(
           (sum, item) => sum + (item.price * item.quantity),
           0
@@ -316,55 +348,33 @@ function App() {
     });
   };
 
+  const handleLoginOrSignup = (userData) => {
+    setIsLoggedIn(true);
+    console.log("User logged in:", userData);
+  };
+  
   return (
-    <Router>
-      <div className="flex flex-col h-screen">
-        {!isLoggedIn ? (
-          <Routes>
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/register" element={<Register onRegister={handleLogin} />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        ) : (
-          <>
-            <Header loggedIn={isLoggedIn} userName={loggedInUser?.name} onLogout={handleLogout} />
-            <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
-              {(currentPage === 'grocery-list' || currentPage === 'home') && (
-                <SearchBar 
-                  onSearch={handleSearch} 
-                  onStoreFilter={handleStoreFilter}
-                  availableStores={mockStores}
-                />
-              )}
-              
-              <Routes>
-                <Route 
-                  path="/home" 
-                  element={
-                    <Home 
-                      groceryData={currentList}
-                      onAddItem={handleAddItem}
-                      onRemoveItem={handleRemoveItem}
-                      onUpdateQuantity={handleUpdateItemQuantity}
-                      availableStores={mockStores}
-                    />
-                  }
-                />
-                <Route path="/grocery-list" element={<GroceryList />} />
-                <Route path="/recipe-book" element={<Recipes />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/price-comparison" element={<PriceComparison />} />
-                <Route path="*" element={<Navigate to="/home" />} />
-              </Routes>
-            </main>
-            <Navigation 
-              currentPage={currentPage} 
-              onNavigate={handleNavigate}
-            />
-          </>
-        )}
-      </div>
-    </Router>
+    <div className="flex flex-col h-screen">
+      {!isLoggedIn ? (
+        <UserLogin onLoginOrSignup={handleLoginOrSignup} />
+      ) : (
+        <Router>
+          <Header loggedIn={isLoggedIn} userName={loggedInUser.name} />
+          <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
+            <SearchBar onSearch={handleSearch} onStoreFilter={handleStoreFilter} availableStores={mockStores} />
+            
+            <Routes>
+              <Route path="/" element={<Home groceryData={currentList} />} />
+              <Route path="/grocery-list" element={<GroceryList />} />
+              <Route path="/recipe-book" element={<Recipes />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/price-comparison" element={<PriceComparison />} />
+            </Routes>
+          </main>
+          <Navigation />
+        </Router>
+      )}
+    </div>
   );
-}
+};
 export default App;

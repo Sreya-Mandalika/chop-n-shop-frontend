@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import { LucideUser, LucideKey} from 'lucide-react';
-import Select from 'react-select';
-
-const dietaryOptions = [
-  { value: 'vegetarian', label: 'Vegetarian' },
-  { value: 'vegan', label: 'Vegan' },
-  { value: 'glutenFree', label: 'Gluten-Free' },
-  { value: 'dairyFree', label: 'Dairy-Free' },
-  { value: 'kosher', label: 'Kosher' },
-  { value: 'halal', label: 'Halal' },
-  { value: 'paleo', label: 'Paleo' },
-  { value: 'keto', label: 'Keto' }
-];
+import { LucideUser, LucideKey } from 'lucide-react';
 
 const UserLogin = () => {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -23,161 +11,120 @@ const UserLogin = () => {
     allergens: '',
     preferredStores: ''
   });
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDietaryPreferencesChange = (options) => {
-    setFormData({ ...formData, dietaryPreferences: options.map((option) => option.value) });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement your login or signup logic here
-    console.log('Form data:', formData);
+    
+    // If it's a new user, register them; otherwise, log in
+    if (isNewUser) {
+      // Implement the registration logic here
+      console.log('Registering user:', formData);
+    } else {
+      try {
+        const response = await fetch('http://localhost:8000/login/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setSuccessMessage('Login successful!');
+          setError('');
+          console.log(data);  // Handle successful login response here
+        } else {
+          setError(data.detail || 'Login failed');
+          setSuccessMessage('');
+        }
+      } catch (err) {
+        setError('An error occurred during login');
+        setSuccessMessage('');
+        console.error(err);
+      }
+    }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6">
-          {isNewUser ? 'Create an Account' : 'Login'}
-        </h2>
-
+        <h2 className="text-2xl font-bold mb-6">{isNewUser ? 'Create an Account' : 'Login'}</h2>
+        
         <form onSubmit={handleSubmit}>
-          {isNewUser && (
+          {!isNewUser && (
             <>
               <div className="mb-4">
-                <label htmlFor="firstName" className="block font-medium text-gray-700 mb-1">
-                  First Name
+                <label htmlFor="email" className="block font-medium text-gray-700 mb-1">
+                  Email
                 </label>
                 <div className="relative">
                   <LucideUser className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400" />
                   <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
+                    type="email"
+                    id="email"
+                    name="email"
                     className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter your first name"
-                    value={formData.firstName}
+                    placeholder="Enter your email"
+                    value={formData.email}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="dietaryPreferences" className="block font-medium text-gray-700 mb-1">
-                  Dietary Preferences
+                <label htmlFor="password" className="block font-medium text-gray-700 mb-1">
+                  Password
                 </label>
-                <Select
-                  isMulti
-                  name="dietaryPreferences"
-                  options={dietaryOptions}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  onChange={handleDietaryPreferencesChange}
-                  value={formData.dietaryPreferences.map((preference) => ({
-                    value: preference,
-                    label: dietaryOptions.find((option) => option.value === preference).label
-                  }))}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="allergens" className="block font-medium text-gray-700 mb-1">
-                  Allergens
-                </label>
-                <input
-                  type="text"
-                  id="allergens"
-                  name="allergens"
-                  className="pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your allergens"
-                  value={formData.allergens}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="preferredStores" className="block font-medium text-gray-700 mb-1">
-                  Preferred Stores
-                </label>
-                <select
-                  id="preferredStores"
-                  name="preferredStores"
-                  className="pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={formData.preferredStores}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select preferred stores</option>
-                  <option value="wholeFoods">Whole Foods</option>
-                  <option value="traderJoes">Trader Joe's</option>
-                  <option value="noPreference">No Preference</option>
-                </select>
+                <div className="relative">
+                  <LucideKey className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400" />
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                  />
+                </div>
               </div>
             </>
           )}
 
+          {/* Add other input fields here if needed */}
+          
           <div className="mb-4">
-            <label htmlFor="email" className="block font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <div className="relative">
-              <LucideUser className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
+            {successMessage && <div className="text-green-500">{successMessage}</div>}
+            {error && <div className="text-red-500">{error}</div>}
           </div>
 
           <div className="mb-4">
-            <label htmlFor="password" className="block font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <LucideKey className="absolute top-1/2 transform -translate-y-1/2 left-3 text-gray-400" />
-              <input
-                type="password"
-                id="password"
-                name="password"
-                className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {isNewUser ? 'Create Account' : 'Login'}
-          </button>
-
-          <div className="flex items-center justify-between mt-4">
             <button
-              type="button"
-              className="text-blue-500 hover:text-blue-600 focus:outline-none"
+              type="submit"
+              className="w-full py-2 px-4 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {isNewUser ? 'Create Account' : 'Login'}
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p
+              className="text-blue-500 cursor-pointer"
               onClick={() => setIsNewUser(!isNewUser)}
             >
-              {isNewUser ? 'Already have an account? Login' : 'New user? Create an account'}
-            </button>
-            {!isNewUser && (
-              <button
-                type="button"
-                className="text-blue-500 hover:text-blue-600 focus:outline-none"
-              >
-                Forgot password?
-              </button>
-            )}
+              {isNewUser ? 'Already have an account? Login' : 'Don’t have an account? Sign Up'}
+            </p>
           </div>
         </form>
       </div>
