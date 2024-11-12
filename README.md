@@ -24,6 +24,10 @@ npm start
 ```
 This will start the React development server and the frontend will be available at http://localhost:3000.
 
+---------------------------------------------
+
+
+
 
 
 # Chop-N-Shop Frontend
