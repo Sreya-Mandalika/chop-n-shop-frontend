@@ -88,7 +88,7 @@ function App() {
               availableStores={mockStores}
             />
             <Routes>
-              <Route path="/home" element={<Home groceryData={currentList} />} />
+              <Route path="/" element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />
               <Route path="/recipe-book" element={<Recipes />} />
               <Route path="/profile" element={<Profile />} />
