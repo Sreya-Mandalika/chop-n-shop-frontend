@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// import React, { useState } from 'react';
 // import './App.css';
 // import './index.css';
 
@@ -147,6 +147,7 @@ import { useState } from 'react';
 
 //   const handleLoginOrSignup = (userData) => {
 //     setIsLoggedIn(true);
+//     // setCurrentPage('home');  // This ensures the homepage renders
 //     console.log("User logged in:", userData);
 //   };
   
@@ -157,7 +158,7 @@ import { useState } from 'react';
 //         <UserLogin onLoginOrSignup={handleLoginOrSignup} />
 //       ) : (
 //         <>
-//           <Header loggedIn={isLoggedIn} userName={loggedInUser.name} />
+//           <Header loggedIn={isLoggedIn} userName="John" />
 //           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
 //             {/* Show SearchBar only on necessary pages */}
 //             {(currentPage === 'grocery-list' || currentPage === 'home') && (
@@ -205,7 +206,7 @@ import { useState } from 'react';
 // }
 
 // export default App;
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Header from './components/Header';
@@ -349,9 +350,11 @@ function App() {
   };
 
   const handleLoginOrSignup = (userData) => {
-    setIsLoggedIn(true);
-    console.log("User logged in:", userData);
-  };
+        setIsLoggedIn(true);
+        setCurrentPage('home');  // This ensures the homepage renders
+        console.log("User logged in:", userData);
+      };
+      
   
   return (
     <div className="flex flex-col h-screen">
@@ -359,12 +362,12 @@ function App() {
         <UserLogin onLoginOrSignup={handleLoginOrSignup} />
       ) : (
         <Router>
-          <Header loggedIn={isLoggedIn} userName={loggedInUser.name} />
+          <Header loggedIn={isLoggedIn} userName={loggedInUser.name}/>
           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
             <SearchBar onSearch={handleSearch} onStoreFilter={handleStoreFilter} availableStores={mockStores} />
             
             <Routes>
-              <Route path="/" element={<Home groceryData={currentList} />} />
+              <Route index element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />
               <Route path="/recipe-book" element={<Recipes />} />
               <Route path="/profile" element={<Profile />} />

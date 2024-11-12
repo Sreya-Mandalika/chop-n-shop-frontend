@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LucideUser, LucideKey } from 'lucide-react';
 
-const UserLogin = () => {
+const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -43,7 +43,8 @@ const UserLogin = () => {
         if (response.ok) {
           setSuccessMessage('Login successful!');
           setError('');
-          console.log(data);  // Handle successful login response here
+          console.log(data); 
+          onLoginOrSignup(data); 
         } else {
           setError(data.detail || 'Login failed');
           setSuccessMessage('');
