@@ -4,7 +4,7 @@ import { Home, User, Book, ShoppingCart, LineChart } from 'lucide-react';
 
 function Navigation() {
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home', path: '/home' },
+    { id: 'home', icon: Home, label: 'Home', path: '/' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
     { id: 'grocery-list', icon: ShoppingCart, label: 'Lists', path: '/grocery-list' },
     { id: 'recipe-book', icon: Book, label: 'Recipes', path: '/recipe-book' },
