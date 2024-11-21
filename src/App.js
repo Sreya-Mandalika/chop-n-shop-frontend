@@ -31,9 +31,6 @@ const mockCurrentList = {
 const mockStores = [
   "Trader Joe's",
   "Whole Foods",
-  "Kroger",
-  "Walmart",
-  "Target"
 ];
 
 function App() {
