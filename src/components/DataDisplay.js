@@ -6,15 +6,24 @@ function DataDisplay({ searchTerm }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const fetchRecipe = async () => {
+  const generateRecipe = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:8000/recipes/${searchTerm}`);
-      setRecipe(response.data);
+      // Make POST request to generate a recipe
+      const response = await axios.post('http://localhost:8000/generate_recipe/', {
+        recipe_prompt: searchTerm, // Send user prompt
+      });
+
+      const generatedRecipe = response.data.recipe;
+      if (!generatedRecipe) {
+        setError("Failed to generate recipe. Please try again.");
+      } else {
+        setRecipe(generatedRecipe); // Set the generated recipe
+      }
     } catch (err) {
-      setError("Recipe not found");
+      setError("Error generating recipe. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -23,15 +32,15 @@ function DataDisplay({ searchTerm }) {
 
   useEffect(() => {
     if (searchTerm) {
-      fetchRecipe(); 
+      generateRecipe();
     }
   }, [searchTerm]);
 
   return (
     <div className="bg-white shadow rounded-lg p-6 mt-4">
-      <h1 className="text-xl font-bold mb-4">Recipe Search</h1>
+      <h1 className="text-xl font-bold mb-4">Your Generated Recipe</h1>
 
-      {loading && <p className="text-gray-500">Loading recipe...</p>}
+      {loading && <p className="text-gray-500">Generating recipe...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !recipe && !error && (
         <p className="text-gray-500">No recipe found for "{searchTerm}".</p>
@@ -40,18 +49,27 @@ function DataDisplay({ searchTerm }) {
       {recipe && (
         <div>
           <h2 className="text-2xl font-semibold text-blue-600 mb-2">
-            {recipe.Recipe_name}
+            {recipe.name || "Unnamed Recipe"}
           </h2>
-          <p className="text-gray-600 mb-4">Recipe ID: {recipe.Recipe_id}</p>
-          
+          <p className="text-gray-600 mb-4">Recipe ID: {recipe._id}</p>
+
           <h3 className="text-lg font-semibold text-gray-700 mb-2">Ingredients:</h3>
           <ul className="list-disc list-inside space-y-1">
-            {recipe.Ingredients.map((ingredient, index) => (
+            {recipe.ingredients?.map((ingredient, index) => (
               <li key={index} className="text-gray-700">
                 {ingredient}
               </li>
-            ))}
+            )) || <li className="text-gray-500">No ingredients listed.</li>}
           </ul>
+
+          <h3 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Instructions:</h3>
+          <ol className="list-decimal list-inside space-y-1">
+            {recipe.instructions?.map((instruction, index) => (
+              <li key={index} className="text-gray-700">
+                {instruction}
+              </li>
+            )) || <li className="text-gray-500">No instructions provided.</li>}
+          </ol>
         </div>
       )}
     </div>

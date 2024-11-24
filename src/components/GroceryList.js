@@ -13,6 +13,8 @@ function GroceryListForm() {
   const [newItem, setNewItem] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [groceryList, setGroceryList] = useState(null); // Store the response with the grocery list
+  const [loading, setLoading] = useState(false); // Loading state to track API request
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,9 +35,12 @@ function GroceryListForm() {
     event.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+    setGroceryList(null); // Reset the grocery list before new request
+    setLoading(true); // Start loading
 
     if (preferences.items.length === 0) {
       setErrorMessage('Please add at least one item to the list.');
+      setLoading(false); // Stop loading
       return;
     }
 
@@ -44,15 +49,17 @@ function GroceryListForm() {
       Grocery_items: preferences.items, // Array of strings for items
       Dietary_preferences: preferences.dietaryPreferences, // String (vegan, vegetarian, etc.)
       Allergies: preferences.allergies ? preferences.allergies.split(',').map((a) => a.trim()) : [], // Split allergies into array of strings
-      Store_preference: preferences.storePreference || null, // Store preference (null if no preference)
+      Store_preference: preferences.storePreference === 'None' ? null : preferences.storePreference, // Send null for "None"
     };
 
     try {
       const response = await axios.post('http://localhost:8000/generate_grocery_list/', preferencesData);
       setSuccessMessage('Grocery list generated successfully!');
-      console.log(response.data);
+      setGroceryList(response.data.grocery_list); // Store the grocery list from the response
     } catch (error) {
       setErrorMessage('An error occurred while generating the list.');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -115,7 +122,7 @@ function GroceryListForm() {
             <option value="">Select a store preference (or none)</option>
             <option value="Trader Joe's">Trader Joe's</option>
             <option value="Whole Foods Market">Whole Foods Market</option>
-            <option value="">None</option>
+            <option value="None">None</option> {/* Adjusted the "None" value */}
           </select>
         </div>
 
@@ -159,6 +166,73 @@ function GroceryListForm() {
           </button>
         </div>
       </form>
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="mt-6 flex justify-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent border-solid rounded-full animate-spin"></div>
+        </div>
+      )}
+
+      {/* Display the grocery list if available */}
+      {groceryList && !loading && (
+        <div className="mt-8 bg-white shadow rounded-lg p-6">
+          {/* Display both lists if "None" is selected */}
+          {preferences.storePreference === 'None' || preferences.storePreference === '' ? (
+            <>
+              {groceryList["Trader Joe's"] && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Grocery List for Trader Joe's</h3>
+                  <ul className="mt-4">
+                    {groceryList["Trader Joe's"].items.map((item, index) => (
+                      <li key={index} className="py-2 border-b">
+                        <span className="font-medium">{item.Item_name}</span> - ${item.Price.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 font-semibold">
+                    Total Cost: ${groceryList["Trader Joe's"].Total_Cost.toFixed(2)}
+                  </div>
+                </div>
+              )}
+
+              {groceryList["Whole Foods Market"] && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-gray-800">Grocery List for Whole Foods Market</h3>
+                  <ul className="mt-4">
+                    {groceryList["Whole Foods Market"].items.map((item, index) => (
+                      <li key={index} className="py-2 border-b">
+                        <span className="font-medium">{item.Item_name}</span> - ${item.Price.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 font-semibold">
+                    Total Cost: ${groceryList["Whole Foods Market"].Total_Cost.toFixed(2)}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {groceryList[preferences.storePreference] && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800">Grocery List for {preferences.storePreference}</h3>
+                  <ul className="mt-4">
+                    {groceryList[preferences.storePreference].items.map((item, index) => (
+                      <li key={index} className="py-2 border-b">
+                        <span className="font-medium">{item.Item_name}</span> - ${item.Price.toFixed(2)}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 font-semibold">
+                    Total Cost: ${groceryList[preferences.storePreference].Total_Cost.toFixed(2)}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
