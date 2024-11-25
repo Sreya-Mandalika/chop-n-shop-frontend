@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function GroceryListForm() {
@@ -17,6 +17,71 @@ function GroceryListForm() {
   const [groceryList, setGroceryList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState('recipe'); // 'recipe' or 'items'
+  const [userGroceryLists, setUserGroceryLists] = useState([]); // Store all the user's grocery lists
+
+  // const fetchUserGroceryLists = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:8000/grocery_lists', {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('token')}`,
+  //       },
+  //     });
+  //     console.log(response.data);  // Check the response data here
+  //     setUserGroceryLists(response.data);
+  //   } catch (error) {
+  //     console.error('Error fetching grocery lists:', error);
+  //     setErrorMessage('Failed to fetch grocery lists.');
+  //   }
+  // };
+  // When calling the delete endpoint, ensure you have a valid list ID
+  const handleDelete = async (listId) => {
+    if (!listId) {
+      console.log("no id given");
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      
+      await axios.delete(`http://localhost:8000/grocery_lists/${listId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Refresh the list after successful deletion
+      fetchUserGroceryLists();
+    } catch (error) {
+      console.error('Error deleting list:', error);
+    }
+  };
+  const fetchUserGroceryLists = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      
+      const response = await axios.get('http://localhost:8000/grocery_lists', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data && response.data.grocery_lists) {
+        setUserGroceryLists(response.data.grocery_lists);
+      }
+    } catch (error) {
+      console.error('Error fetching grocery lists:', error);
+      setErrorMessage('Failed to fetch grocery lists');
+    }
+  };
+  useEffect(() => {
+    fetchUserGroceryLists(); // Fetch lists when the component mounts
+  }, []);
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -81,9 +146,18 @@ function GroceryListForm() {
         viewMode === 'recipe'
           ? 'http://localhost:8000/generate_recipe_with_grocery_list'
           : 'http://localhost:8000/generate_grocery_list/';
-      const response = await axios.post(endpoint, payload);
+      const response = await axios.post(endpoint, payload, {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          
       setSuccessMessage('Grocery list generated successfully!');
       setGroceryList(response.data.grocery_list || []);
+      fetchUserGroceryLists();
+      console.log(JSON.stringify(payload, null, 2));
+
     } catch (error) {
       setErrorMessage('An error occurred while generating the list.');
     } finally {
@@ -222,40 +296,80 @@ function GroceryListForm() {
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md shadow-sm"
             >
-              <option value="">Select a store preference (or none)</option>
-              <option value="Trader Joe's">Trader Joe's</option>
-              <option value="Whole Foods Market">Whole Foods Market</option>
               <option value="None">None</option>
+              <option value="Store1">Store1</option>
+              <option value="Store2">Store2</option>
             </select>
           </div>
         )}
 
-        <button
-          type="submit"
-          className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-        >
-          {loading ? 'Generating...' : 'Generate Grocery List'}
-        </button>
+        <div className="mb-4">
+          <button
+            type="submit"
+            className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            {loading ? 'Generating...' : 'Generate List'}
+          </button>
+        </div>
       </form>
 
-      {errorMessage && <div className="text-red-500 mt-4">{errorMessage}</div>}
-      {successMessage && <div className="text-green-500 mt-4">{successMessage}</div>}
+      {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+      {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
 
-      {groceryList.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-800">Generated Grocery List</h3>
-          <ul className="mt-4">
-            {groceryList.map((item, index) => (
-              <li key={index} className="py-2 border-b text-gray-600">
-                {item.name} - ${item.price}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-4 text-lg font-semibold text-gray-800">
-            Total Cost: ${calculateTotalCost()}
-          </div>
+      {/* Display User's Grocery Lists */}
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Grocery Lists</h3>
+        <div className="space-y-4">
+          {userGroceryLists.length > 0 ? (
+            userGroceryLists.map((list, index) => (
+              
+              <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                <div className="relative">
+                  <button
+                    onClick={() => handleDelete (list._id)}
+                    
+                    className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                  >
+                    Delete
+                  </button>
+                </div>
+
+                {list["Trader Joe's"]?.items && (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-gray-700">Trader Joe's</h4>
+                    {list["Trader Joe's"].items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
+                        <span>{item.Item_name}</span>
+                        <span>${item.Price}</span>
+                      </div>
+                    ))}
+                    <div className="mt-2 text-right text-sm font-medium">
+                      Total: ${list["Trader Joe's"].Total_Cost}
+                    </div>
+                  </div>
+                )}
+                
+                {list["Whole Foods Market"]?.items && (
+                  <div>
+                    <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
+                    {list["Whole Foods Market"].items.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
+                        <span>{item.Item_name}</span>
+                        <span>${item.Price}</span>
+                      </div>
+                    ))}
+                    <div className="mt-2 text-right text-sm font-medium">
+                      Total: ${list["Whole Foods Market"].Total_Cost}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No grocery lists available.</p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

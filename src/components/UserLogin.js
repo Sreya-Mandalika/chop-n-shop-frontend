@@ -63,10 +63,11 @@ const UserLogin = ({ onLoginOrSignup }) => {
             password: formData.password,
           }),
         });
-
         const data = await response.json();
+        
 
         if (response.ok) {
+          localStorage.setItem('token', data.access_token);
           setSuccessMessage('Login successful!');
           setError('');
           onLoginOrSignup(data);
