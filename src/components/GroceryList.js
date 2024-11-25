@@ -20,9 +20,9 @@ function GroceryListForm() {
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
-    setGroceryList([]);  // Clear the grocery list when switching modes
-    setErrorMessage('');  // Clear error message
-    setSuccessMessage('');  // Clear success message
+    setErrorMessage('');
+    setSuccessMessage('');
+    setGroceryList([]); // Reset grocery list when switching views
   };
 
   const handleInputChange = (e) => {
@@ -36,7 +36,7 @@ function GroceryListForm() {
         ...prevState,
         items: [...prevState.items, newItem.trim()],
       }));
-      setNewItem(''); // Clear input field after adding item
+      setNewItem('');
     }
   };
 
@@ -44,11 +44,11 @@ function GroceryListForm() {
     event.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-    setGroceryList([]); // Clear grocery list when submitting
+    setGroceryList([]);
     setLoading(true);
 
     if (viewMode === 'items' && preferences.items.length === 0) {
-      setErrorMessage('Please add at least one item to the list.');
+      setErrorMessage('Please add at least one item.');
       setLoading(false);
       return;
     }
@@ -82,26 +82,17 @@ function GroceryListForm() {
           ? 'http://localhost:8000/generate_recipe_with_grocery_list'
           : 'http://localhost:8000/generate_grocery_list/';
       const response = await axios.post(endpoint, payload);
-      console.log('API Response:', response.data);
-
-      if (Array.isArray(response.data.grocery_list)) {
-        setSuccessMessage('Grocery list generated successfully!');
-        setGroceryList(response.data.grocery_list);
-      } else {
-        setErrorMessage('Invalid grocery list format received from the API.');
-      }
+      setSuccessMessage('Grocery list generated successfully!');
+      setGroceryList(response.data.grocery_list || []);
     } catch (error) {
-      console.error('Error fetching grocery list:', error);
       setErrorMessage('An error occurred while generating the list.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate total cost
-  const calculateTotalCost = () => {
-    return groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
-  };
+  const calculateTotalCost = () =>
+    groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -123,23 +114,23 @@ function GroceryListForm() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {viewMode === 'recipe' ? (
-          <>
-            <div className="mb-4">
-              <label htmlFor="recipeName" className="block text-sm font-medium text-gray-700">
-                Recipe Name
-              </label>
-              <input
-                type="text"
-                id="recipeName"
-                value={recipeName}
-                onChange={(e) => setRecipeName(e.target.value)}
-                required
-                className="mt-1 p-2 w-full border rounded-md shadow-sm"
-              />
-            </div>
-          </>
-        ) : (
+        {viewMode === 'recipe' && (
+          <div className="mb-4">
+            <label htmlFor="recipeName" className="block text-sm font-medium text-gray-700">
+              Recipe Name
+            </label>
+            <input
+              type="text"
+              id="recipeName"
+              value={recipeName}
+              onChange={(e) => setRecipeName(e.target.value)}
+              required
+              className="mt-1 p-2 w-full border rounded-md shadow-sm"
+            />
+          </div>
+        )}
+
+        {viewMode === 'items' && (
           <>
             <div className="mb-4">
               <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">
@@ -161,19 +152,21 @@ function GroceryListForm() {
                 Add Item
               </button>
             </div>
-            <div className="mb-6">
-              <h4 className="text-lg font-medium text-gray-700">Items</h4>
-              <ul className="mt-2">
-                {preferences.items.map((item, index) => (
+            <ul className="mb-6">
+              {preferences.items.length > 0 ? (
+                preferences.items.map((item, index) => (
                   <li key={index} className="py-2 border-b text-gray-600">
                     {item}
                   </li>
-                ))}
-              </ul>
-            </div>
+                ))
+              ) : (
+                <li className="text-gray-500">No items added yet.</li>
+              )}
+            </ul>
           </>
         )}
 
+        {/* Common Preferences */}
         <div className="mb-4">
           <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
             Budget
@@ -245,52 +238,24 @@ function GroceryListForm() {
         </button>
       </form>
 
-      {errorMessage && <p className="mt-4 text-red-600 font-medium">{errorMessage}</p>}
-      {successMessage && <p className="mt-4 text-green-600 font-medium">{successMessage}</p>}
+      {errorMessage && <div className="text-red-500 mt-4">{errorMessage}</div>}
+      {successMessage && <div className="text-green-500 mt-4">{successMessage}</div>}
 
-      <div className="mt-6">
-        {/* Recipe-based Grocery List */}
-        {viewMode === 'recipe' && groceryList.length > 0 && (
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800">Recipe-Based Grocery List</h3>
-            <ul className="mt-2">
-              {groceryList.map((item, index) => (
-                <li key={index} className="py-2 border-b">
-                  <div className="flex justify-between">
-                    <span>{item.name}</span>
-                    <span className="text-gray-600">${item.price}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 text-lg font-medium">
-              <span>Total: </span>
-              <span>${calculateTotalCost()}</span>
-            </div>
+      {groceryList.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold text-gray-800">Generated Grocery List</h3>
+          <ul className="mt-4">
+            {groceryList.map((item, index) => (
+              <li key={index} className="py-2 border-b text-gray-600">
+                {item.name} - ${item.price}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 text-lg font-semibold text-gray-800">
+            Total Cost: ${calculateTotalCost()}
           </div>
-        )}
-
-        {/* Item-based Grocery List */}
-        {viewMode === 'items' && groceryList.length > 0 && (
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800">Item-Based Grocery List</h3>
-            <ul className="mt-2">
-              {groceryList.map((item, index) => (
-                <li key={index} className="py-2 border-b">
-                  <div className="flex justify-between">
-                    <span>{item.name}</span>
-                    <span className="text-gray-600">${item.price}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 text-lg font-medium">
-              <span>Total: </span>
-              <span>${calculateTotalCost()}</span>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
