@@ -1,97 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import '../App.css';
+import axios from 'axios';
 
 function Profile() {
-  const [dietaryRestrictions, setDietaryRestrictions] = useState([]);
-  const [allergies, setAllergies] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [allergyInput, setAllergyInput] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const handleDietChange = (value) => {
-    setDietaryRestrictions(prev => 
-      prev.includes(value)
-        ? prev.filter(item => item !== value)
-        : [...prev, value]
-    );
-  };
+  // Fetch user email from localStorage
+  const userEmail = localStorage.getItem('user_email'); // Make sure email is stored during login
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        if (!userEmail) {
+          throw new Error('User not logged in');
+        }
+
+        const response = await axios.get('http://localhost:8000/api/user', {
+          params: { user_email: userEmail }, // Dynamically use logged-in email
+        });
+
+        setUserData(response.data);
+      } catch (error) {
+        setErrorMessage(error.response?.data?.detail || error.message || 'Failed to fetch user data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [userEmail]);
 
   const handleAllergySubmit = (e) => {
     e.preventDefault();
-    if (allergyInput.trim() && !allergies.includes(allergyInput.trim())) {
-      setAllergies(prev => [...prev, allergyInput.trim()]);
+    if (allergyInput.trim() && !userData?.allergies.includes(allergyInput.trim())) {
+      setUserData((prev) => ({
+        ...prev,
+        allergies: [...(prev.allergies || []), allergyInput.trim()],
+      }));
       setAllergyInput('');
     }
   };
 
   const removeAllergy = (allergy) => {
-    setAllergies(prev => prev.filter(item => item !== allergy));
+    setUserData((prev) => ({
+      ...prev,
+      allergies: prev.allergies.filter((item) => item !== allergy),
+    }));
   };
+
+  if (loading) {
+    return <div className="text-center p-6">Loading user data...</div>;
+  }
+
+  if (!userData) {
+    return <div className="text-center p-6 text-red-500">{errorMessage}</div>;
+  }
 
   return (
     <div className="p-6">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Profile Picture and Info Section */}
         <div className="flex items-center space-x-6 p-12 bg-gradient-to-r from-green-400 to-blue-500">
-          <img 
-            className="w-24 h-24 rounded-full border-4 border-white" 
-            src="/api/placeholder/150/150" 
-            alt="Profile" 
+          <img
+            className="w-24 h-24 rounded-full border-4 border-white"
+            src={userData.profileImage || '/placeholder-image.jpg'} // Dynamic placeholder
+            alt="Profile"
           />
           <div>
-            <h1 className="text-2xl font-bold text-white">Welcome, John!</h1>
+            <h1 className="text-2xl font-bold text-white">Welcome, {userData.first_name || 'User'}!</h1>
             <p className="text-white">Slice your grocery bill and food waste.</p>
           </div>
         </div>
 
-        {/* Description and Additional Details */}
+        {/* Display User Details */}
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4">About Chop N' Shop</h2>
-          <p className="text-gray-700 mb-4">
-            Chop N' Shop is designed to help you find the best deals, make meal planning easier, 
-            and reduce food waste. Our aim is to make grocery shopping a hassle-free experience by providing 
-            AI-based recipe recommendations and price comparisons across stores.
-          </p>
+          <h2 className="text-xl font-semibold mb-4">User Details</h2>
+          <p><strong>Email:</strong> {userData.email || 'Not available'}</p>
+          <p><strong>Budget:</strong> ${userData.Budget ?? 'Not set'}</p>
 
-          {/* Dietary Restrictions Checkboxes */}
+          {/* Dietary Restrictions */}
           <div className="mb-6">
-            <label className="block text-gray-700 font-semibold mb-2">
-              Dietary Restrictions
-            </label>
-            <div className="space-y-2">
-              {['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut-Free'].map((restriction) => (
-                <label key={restriction} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={dietaryRestrictions.includes(restriction.toLowerCase())}
-                    onChange={() => handleDietChange(restriction.toLowerCase())}
-                    className="rounded text-blue-500 focus:ring-blue-400"
-                  />
-                  <span className="text-gray-700">{restriction}</span>
-                </label>
-              ))}
+            <label className="block text-gray-700 font-semibold mb-2">Dietary Restrictions</label>
+            <div className="flex flex-wrap gap-2">
+              {userData.dietary_restrictions?.length ? (
+                userData.dietary_restrictions.map((restriction, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  >
+                    {restriction}
+                  </span>
+                ))
+              ) : (
+                <p>No dietary restrictions listed.</p>
+              )}
             </div>
-            {dietaryRestrictions.length > 0 && (
-              <div className="mt-2">
-                <p className="text-sm text-gray-600">Selected restrictions:</p>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {dietaryRestrictions.map(restriction => (
-                    <span
-                      key={restriction}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                    >
-                      {restriction}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Allergies Input Form */}
+          {/* Allergies */}
           <div className="mb-6">
-            <label className="block text-gray-700 font-semibold mb-2">
-              Allergies
-            </label>
-            <form onSubmit={handleAllergySubmit} className="flex gap-2">
+            <label className="block text-gray-700 font-semibold mb-2">Allergies</label>
+            <form onSubmit={handleAllergySubmit} className="flex gap-2 mb-4">
               <input
                 type="text"
                 value={allergyInput}
@@ -106,11 +119,11 @@ function Profile() {
                 Add
               </button>
             </form>
-            {allergies.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {allergies.map(allergy => (
+            <div className="flex flex-wrap gap-2">
+              {userData.allergies?.length ? (
+                userData.allergies.map((allergy, index) => (
                   <span
-                    key={allergy}
+                    key={index}
                     className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-red-100 text-red-800"
                   >
                     {allergy}
@@ -121,20 +134,30 @@ function Profile() {
                       <X size={14} className="hover:text-red-600" />
                     </button>
                   </span>
-                ))}
-              </div>
-            )}
+                ))
+              ) : (
+                <p>No allergies listed.</p>
+              )}
+            </div>
           </div>
 
-          {/* Additional Elements */}
-          <div className="p-4 bg-gray-100 rounded-lg mb-4">
-            <h3 className="text-lg font-semibold mb-2">Your Favorite Stores</h3>
-            <p className="text-gray-600">Add your go-to stores for faster price comparisons!</p>
-          </div>
-
-          <div className="p-4 bg-gray-100 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Your Saved Recipes</h3>
-            <p className="text-gray-600">Keep track of recipes you love or want to try!</p>
+          {/* Preferred Stores */}
+          <div className="mb-6">
+            <label className="block text-gray-700 font-semibold mb-2">Preferred Stores</label>
+            <div className="flex flex-wrap gap-2">
+              {userData.preferred_stores?.length ? (
+                userData.preferred_stores.map((store, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm"
+                  >
+                    {store}
+                  </span>
+                ))
+              ) : (
+                <p>No preferred stores listed.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
