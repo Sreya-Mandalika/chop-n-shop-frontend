@@ -12,7 +12,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,13 +21,13 @@ const UserLogin = ({ onLoginOrSignup }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Show loader
+    setLoading(true);
     setError('');
     setSuccessMessage('');
 
     try {
       if (isNewUser) {
-        // Registration
+        // Registration process
         const response = await fetch('http://localhost:8000/register/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -49,7 +49,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
           setError(data.detail || 'Registration failed');
         }
       } else {
-        // Login
+        // Login process
         const response = await fetch('http://localhost:8000/login/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -62,10 +62,11 @@ const UserLogin = ({ onLoginOrSignup }) => {
         const data = await response.json();
 
         if (response.ok) {
-          localStorage.setItem('user_email', formData.email); // Save email for later use
-          localStorage.setItem('token', data.access_token); // Save token if applicable
+          localStorage.setItem('user_email', formData.email);
+          localStorage.setItem('user_name', data.first_name || ''); // Save user's name
+          localStorage.setItem('token', data.access_token); // Save token
           setSuccessMessage('Login successful!');
-          onLoginOrSignup(data); // Notify parent component
+          onLoginOrSignup(data);
         } else {
           setError(data.detail || 'Login failed');
         }
@@ -74,14 +75,14 @@ const UserLogin = ({ onLoginOrSignup }) => {
       setError('An error occurred. Please try again.');
       console.error(err);
     } finally {
-      setLoading(false); // Hide loader
+      setLoading(false);
     }
   };
 
   return (
     <div className="background-image">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-full max-w-md p-8 bg-transparent rounded-lg shadow-md">
+        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-6">{isNewUser ? 'Create an Account' : 'Login'}</h2>
 
           <form onSubmit={handleSubmit}>
@@ -160,11 +161,10 @@ const UserLogin = ({ onLoginOrSignup }) => {
               {error && <div className="text-red-500">{error}</div>}
             </div>
 
-            <div className="loginButton mb-4">
-              
+            <div className="mb-4">
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {isNewUser ? 'Create Account' : 'Login'}
               </button>
