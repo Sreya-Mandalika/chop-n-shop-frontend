@@ -18,21 +18,9 @@ function GroceryListForm() {
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState('recipe'); // 'recipe' or 'items'
   const [userGroceryLists, setUserGroceryLists] = useState([]); // Store all the user's grocery lists
+  const [listName, setListName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // const fetchUserGroceryLists = async () => {
-  //   try {
-  //     const response = await axios.get('http://localhost:8000/grocery_lists', {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem('token')}`,
-  //       },
-  //     });
-  //     console.log(response.data);  // Check the response data here
-  //     setUserGroceryLists(response.data);
-  //   } catch (error) {
-  //     console.error('Error fetching grocery lists:', error);
-  //     setErrorMessage('Failed to fetch grocery lists.');
-  //   }
-  // };
   // When calling the delete endpoint, ensure you have a valid list ID
   const handleDelete = async (listId) => {
     if (!listId) {
@@ -92,8 +80,13 @@ function GroceryListForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPreferences((prevState) => ({ ...prevState, [name]: value }));
+    setPreferences((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
+  
+  
 
   const addItem = () => {
     if (newItem.trim() !== '') {
@@ -111,13 +104,7 @@ function GroceryListForm() {
     setSuccessMessage('');
     setGroceryList([]);
     setLoading(true);
-
-    if (viewMode === 'items' && preferences.items.length === 0) {
-      setErrorMessage('Please add at least one item.');
-      setLoading(false);
-      return;
-    }
-
+  
     const payload =
       viewMode === 'recipe'
         ? {
@@ -131,6 +118,7 @@ function GroceryListForm() {
             },
           }
         : {
+            list_name: listName, // Explicitly include the list name here
             Budget: parseFloat(preferences.budget) || 0,
             Grocery_items: preferences.items,
             Dietary_preferences: preferences.dietaryPreferences,
@@ -140,30 +128,35 @@ function GroceryListForm() {
             Store_preference:
               preferences.storePreference === 'None' ? null : preferences.storePreference,
           };
-
+  
     try {
       const endpoint =
         viewMode === 'recipe'
           ? 'http://localhost:8000/generate_recipe_with_grocery_list'
           : 'http://localhost:8000/generate_grocery_list/';
       const response = await axios.post(endpoint, payload, {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+  
       setSuccessMessage('Grocery list generated successfully!');
       setGroceryList(response.data.grocery_list || []);
       fetchUserGroceryLists();
       console.log(JSON.stringify(payload, null, 2));
-
+      setListName('');
     } catch (error) {
       setErrorMessage('An error occurred while generating the list.');
     } finally {
       setLoading(false);
     }
   };
+  
+
+  const filteredGroceryLists = userGroceryLists.filter(list =>
+    list && list.list_name && list.list_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const calculateTotalCost = () =>
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
@@ -188,6 +181,19 @@ function GroceryListForm() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+            <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
+              List Name
+            </label>
+            <input
+              type="text"
+              id="listName"
+              value={listName}
+              onChange={(e) => setListName(e.target.value)} 
+              className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              placeholder="Enter a name for your list"
+            />
+        </div>
         {viewMode === 'recipe' && (
           <div className="mb-4">
             <label htmlFor="recipeName" className="block text-sm font-medium text-gray-700">
@@ -302,7 +308,6 @@ function GroceryListForm() {
             </select>
           </div>
         )}
-
         <div className="mb-4">
           <button
             type="submit"
@@ -319,6 +324,15 @@ function GroceryListForm() {
       {/* Display User's Grocery Lists */}
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Grocery Lists</h3>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 w-full border rounded-md shadow-sm"
+            placeholder="Search lists by name"
+          />
+        </div>
         <div className="space-y-4">
           {userGroceryLists.length > 0 ? (
             userGroceryLists.map((list, index) => (
@@ -333,7 +347,8 @@ function GroceryListForm() {
                     Delete
                   </button>
                 </div>
-
+                <h1 className="text-xl font-bold mb-2 text-gray-800">
+                  {list.list_name ? list.list_name : 'Unnamed List'}</h1>
                 {list["Trader Joe's"]?.items && (
                   <div className="mb-4">
                     <h4 className="font-medium text-gray-700">Trader Joe's</h4>
