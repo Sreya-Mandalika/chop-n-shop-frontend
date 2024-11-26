@@ -16,33 +16,32 @@ function GroceryListForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [groceryList, setGroceryList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [viewMode, setViewMode] = useState('recipe'); // 'recipe' or 'items'
-  const [userGroceryLists, setUserGroceryLists] = useState([]); // Store all the user's grocery lists
+  const [viewMode, setViewMode] = useState('recipe'); 
+  const [userGroceryLists, setUserGroceryLists] = useState([]); 
   const [listName, setListName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [newItemName, setNewItemName] = useState('');
   const [newItemStore, setNewItemStore] = useState('Trader Joe\'s');
-  const [newItemPrice, setNewItemPrice] = useState('');
+  
 
 
   const handleAddNewItem = async (listId) => {
-    if (!newItemName || !newItemPrice || !newItemStore) {
+    if (!newItemName || !newItemStore) {
       setErrorMessage('Please fill in all item details');
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
       }
-  
+
       const response = await axios.put(
         `http://localhost:8000/grocery_lists/${listId}/add_item`,
         {
           Item_name: newItemName,
           Store_name: newItemStore,
-          Price: parseFloat(newItemPrice)
         },
         {
           headers: {
@@ -50,12 +49,11 @@ function GroceryListForm() {
           }
         }
       );
-  
+
       if (response.data) {
         setSuccessMessage('Item added successfully');
         setNewItemName('');
-        setNewItemPrice('');
-        fetchUserGroceryLists();
+        fetchUserGroceryLists();  // Refresh the grocery lists
       }
     } catch (error) {
       setErrorMessage('Failed to add item');
@@ -195,7 +193,7 @@ function GroceryListForm() {
     }
   };
   
-
+  
   const filteredGroceryLists = userGroceryLists.filter(list => 
     list && list.list_name && list.list_name.toLowerCase().includes(searchQuery.toLowerCase())
   ).map(list => {
@@ -211,7 +209,7 @@ function GroceryListForm() {
     }
     return list;
   });
-  
+  const fieldsToRemove = ['recipe_id', 'user_id', 'created_at', 'grocery_list', 'total_cost', 'over_budget'];
 
   const calculateTotalCost = () =>
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
@@ -397,23 +395,26 @@ function GroceryListForm() {
                       Delete
                     </button>
                   </div>
+                  
                   <h1 className="text-xl font-bold mb-2 text-gray-800">
                     {list.list_name || list.recipe_name || 'Unnamed List'}
                   </h1>
-                  {list["Whole Foods Market"]?.items && (
-                    <div>
-                      <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
-                      {list["Whole Foods Market"].items.map((item, idx) => (
+                  {Object.entries(list ?? {}).filter(([key]) => !fieldsToRemove.includes(key) && key !== '_id' && key !== 'list_name' && key !== 'recipe_name').map(([storeName, storeData]) => (
+                    <div key={storeName}>
+                      <h4 className="font-medium text-gray-700">{storeName}</h4>
+                      {storeData?.items?.map((item, idx) => (
                         <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
-                          <span>{item.item_name || item.Item_name}</span>
-                          <span>${item.price || item.Price}</span>
+                          <span>{item?.item_name || item?.Item_name}</span>
+                          <span>${item?.price || item?.Price}</span>
                         </div>
                       ))}
                       <div className="mt-2 text-right text-sm font-medium">
-                        Total: ${list["Whole Foods Market"].Total_Cost}
+                        Total: ${storeData?.Total_Cost}
                       </div>
                     </div>
-                  )}
+                  ))}
+
+
                   {/* Add item form */}
                   <div className="mt-4 p-4 bg-white rounded-lg">
                     <h3 className="text-lg font-semibold mb-3">Add New Item</h3>
@@ -433,15 +434,7 @@ function GroceryListForm() {
                         <option value="Whole Foods Market">Whole Foods Market</option>
                         <option value="Trader Joe's">Trader Joe's</option>
                       </select>
-                      <input
-                        type="number"
-                        value={newItemPrice}
-                        onChange={(e) => setNewItemPrice(e.target.value)}
-                        placeholder="Price"
-                        step="0.01"
-                        min="0"
-                        className="p-2 border rounded"
-                      />
+                
                       <button
                         onClick={() => handleAddNewItem(list._id)}
                         className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
@@ -462,3 +455,5 @@ function GroceryListForm() {
 }
 
 export default GroceryListForm;
+
+
