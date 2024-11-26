@@ -20,6 +20,48 @@ function GroceryListForm() {
   const [userGroceryLists, setUserGroceryLists] = useState([]); // Store all the user's grocery lists
   const [listName, setListName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemStore, setNewItemStore] = useState('Trader Joe\'s');
+  const [newItemPrice, setNewItemPrice] = useState('');
+
+
+  const handleAddNewItem = async (listId) => {
+    if (!newItemName || !newItemPrice || !newItemStore) {
+      setErrorMessage('Please fill in all item details');
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const response = await axios.put(
+        `http://localhost:8000/grocery_lists/${listId}/add_item`,
+        {
+          Item_name: newItemName,
+          Store_name: newItemStore,
+          Price: parseFloat(newItemPrice)
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+  
+      if (response.data) {
+        setSuccessMessage('Item added successfully');
+        setNewItemName('');
+        setNewItemPrice('');
+        fetchUserGroceryLists();
+      }
+    } catch (error) {
+      setErrorMessage('Failed to add item');
+      console.error('Error:', error);
+    }
+  };
 
   // When calling the delete endpoint, ensure you have a valid list ID
   const handleDelete = async (listId) => {
@@ -154,9 +196,21 @@ function GroceryListForm() {
   };
   
 
-  const filteredGroceryLists = userGroceryLists.filter(list =>
+  const filteredGroceryLists = userGroceryLists.filter(list => 
     list && list.list_name && list.list_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).map(list => {
+    if (list.recipe_name) {
+      // This is a recipe grocery list
+      return {
+        ...list,
+        "Whole Foods Market": {
+          items: list.grocery_list,
+          Total_Cost: list.total_cost
+        }
+      };
+    }
+    return list;
+  });
   
 
   const calculateTotalCost = () =>
@@ -335,55 +389,72 @@ function GroceryListForm() {
           />
         </div>
         <div className="space-y-4">
-          {filteredGroceryLists.length > 0 ? (
+        {filteredGroceryLists.length > 0 ? (
               filteredGroceryLists.map((list, index) => (
-              
-              <div key={index} className="p-4 bg-gray-100 rounded-lg">
-                <div className="relative">
-                  <button
-                    onClick={() => handleDelete (list._id)}
-                    
-                    className="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                  >
-                    Delete
-                  </button>
+                <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                  <div className="relative">
+                    <button onClick={() => handleDelete(list._id)} className="absolute top-2 right-2 text-red-600 hover:text-red-800">
+                      Delete
+                    </button>
+                  </div>
+                  <h1 className="text-xl font-bold mb-2 text-gray-800">
+                    {list.list_name || list.recipe_name || 'Unnamed List'}
+                  </h1>
+                  {list["Whole Foods Market"]?.items && (
+                    <div>
+                      <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
+                      {list["Whole Foods Market"].items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
+                          <span>{item.item_name || item.Item_name}</span>
+                          <span>${item.price || item.Price}</span>
+                        </div>
+                      ))}
+                      <div className="mt-2 text-right text-sm font-medium">
+                        Total: ${list["Whole Foods Market"].Total_Cost}
+                      </div>
+                    </div>
+                  )}
+                  {/* Add item form */}
+                  <div className="mt-4 p-4 bg-white rounded-lg">
+                    <h3 className="text-lg font-semibold mb-3">Add New Item</h3>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                      <input
+                        type="text"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        placeholder="Item name"
+                        className="p-2 border rounded"
+                      />
+                      <select
+                        value={newItemStore}
+                        onChange={(e) => setNewItemStore(e.target.value)}
+                        className="p-2 border rounded"
+                      >
+                        <option value="Whole Foods Market">Whole Foods Market</option>
+                        <option value="Trader Joe's">Trader Joe's</option>
+                      </select>
+                      <input
+                        type="number"
+                        value={newItemPrice}
+                        onChange={(e) => setNewItemPrice(e.target.value)}
+                        placeholder="Price"
+                        step="0.01"
+                        min="0"
+                        className="p-2 border rounded"
+                      />
+                      <button
+                        onClick={() => handleAddNewItem(list._id)}
+                        className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                      >
+                        Add Item
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <h1 className="text-xl font-bold mb-2 text-gray-800">
-                  {list.list_name ? list.list_name : 'Unnamed List'}</h1>
-                {list["Trader Joe's"]?.items && (
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-700">Trader Joe's</h4>
-                    {list["Trader Joe's"].items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
-                        <span>{item.Item_name}</span>
-                        <span>${item.Price}</span>
-                      </div>
-                    ))}
-                    <div className="mt-2 text-right text-sm font-medium">
-                      Total: ${list["Trader Joe's"].Total_Cost}
-                    </div>
-                  </div>
-                )}
-                
-                {list["Whole Foods Market"]?.items && (
-                  <div>
-                    <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
-                    {list["Whole Foods Market"].items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
-                        <span>{item.Item_name}</span>
-                        <span>${item.Price}</span>
-                      </div>
-                    ))}
-                    <div className="mt-2 text-right text-sm font-medium">
-                      Total: ${list["Whole Foods Market"].Total_Cost}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No grocery lists available.</p>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-500">No grocery lists available.</p>
+            )}
         </div>
       </div>
     </div>

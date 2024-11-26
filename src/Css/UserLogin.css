@@ -1,0 +1,160 @@
+/*  */
+  
+  /* Background animation (only for specific pages) */
+  .background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%; /* Ensure width for smooth scrolling */
+    height: 100%;
+    background: url('Img/360_F_292203735_CSsyqyS6A4Z9Czd4Msf7qZEhoxjpzZl1.jpg') center center / cover no-repeat;
+    /* animation: moveBackground 20s linear infinite; Apply animation */
+    /* z-index: -1; Push the background behind content */
+  }
+  
+  /* Keyframe animation for moving background */
+ 
+  /* Main form container */
+  .w-full {
+    width: 100%;
+  }
+  
+  .max-w-md {
+    max-width: 400px;
+  }
+  
+  .p-8 {
+    padding: 2rem;
+  }
+  
+  .bg-transparent {
+    background: rgb(166, 153, 153); /* Fully opaque white background */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for some depth */
+    border-radius: 8px;
+    padding: 2rem;
+  }
+  
+  .rounded-lg {
+    border-radius: 12px;
+  }
+  
+  .shadow-md {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title */
+  .text-2xl {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .mb-6 {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Form input fields */
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fafafa;
+  }
+  
+  input:focus {
+    border-color: #4e9bde;
+    outline: none;
+    box-shadow: 0 0 5px rgba(78, 155, 222, 0.5);
+  }
+  
+  /* Label styling */
+  label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #555;
+  }
+  
+  .relative {
+    position: relative;
+  }
+  
+  .absolute {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #888;
+  }
+  
+  /* Success and error messages */
+  .text-green-500 {
+    color: #28a745;
+    font-size: 0.875rem;
+  }
+  
+  .text-red-500 {
+    color: #dc3545;
+    font-size: 0.875rem;
+  }
+  
+  .loginButton {
+    margin-bottom: 1rem;
+  }
+  
+  /* Button styles */
+  .loginButton {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #5cb85c;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .loginButton:hover {
+    background-color: #4cae4c;
+  }
+  
+  .loginButton:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(92, 184, 92, 0.5);
+  }
+  
+  /* Link between login and register */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-blue-500 {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .text-blue-500:hover {
+    text-decoration: underline;
+  }
+  
+  /* Form error and success messages */
+  div > .text-green-500,
+  div > .text-red-500 {
+    text-align: center;
+    font-size: 0.875rem;
+  }
+  
+  /* Input padding for icons */
+  .pl-10 {
+    padding-left: 2.5rem;
+  }
+  
+  .pr-4 {
+    padding-right: 1rem;
+  }
