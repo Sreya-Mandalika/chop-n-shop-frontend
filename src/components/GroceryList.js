@@ -157,6 +157,7 @@ function GroceryListForm() {
   const filteredGroceryLists = userGroceryLists.filter(list =>
     list && list.list_name && list.list_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
 
   const calculateTotalCost = () =>
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
@@ -334,8 +335,8 @@ function GroceryListForm() {
           />
         </div>
         <div className="space-y-4">
-          {userGroceryLists.length > 0 ? (
-            userGroceryLists.map((list, index) => (
+          {filteredGroceryLists.length > 0 ? (
+              filteredGroceryLists.map((list, index) => (
               
               <div key={index} className="p-4 bg-gray-100 rounded-lg">
                 <div className="relative">

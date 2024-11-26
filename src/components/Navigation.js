@@ -8,7 +8,7 @@ function Navigation() {
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
     { id: 'grocery-list', icon: ShoppingCart, label: 'Lists', path: '/grocery-list' },
     { id: 'recipe-book', icon: Book, label: 'Recipes', path: '/recipe-book' },
-    { id: 'price-comparison', icon: LineChart, label: 'Prices', path: '/price-comparison' }
+    // { id: 'price-comparison', icon: LineChart, label: 'Prices', path: '/price-comparison' }
   ];
 
   return (
