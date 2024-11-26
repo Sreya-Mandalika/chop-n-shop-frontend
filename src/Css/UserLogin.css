@@ -79,18 +79,6 @@
     color: #555;
   }
   
-  .relative {
-    position: relative;
-  }
-  
-  .absolute {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    color: #888;
-  }
-  
   /* Success and error messages */
   .text-green-500 {
     color: #28a745;
