@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import SearchBar from './components/SearchBar';
 import GroceryList from './components/GroceryList';
 import Navigation from './components/Navigation';
 import Recipes from './components/Recipes';
@@ -38,14 +37,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Handlers
-  const handleSearch = (query) => {
-    console.log('Searching:', query);
-  };
-  
-  const handleStoreFilter = (store) => {
-    console.log('Filtering by store:', store);
-  };
-
   const handleAddItem = (item) => {
     const { store, name, quantity, price } = item;
     setCurrentList(prevList => {
@@ -79,11 +70,6 @@ function App() {
         <Router>
           <Header loggedIn={isLoggedIn} userName="John" />
           <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
-            <SearchBar
-              onSearch={handleSearch}
-              onStoreFilter={handleStoreFilter}
-              availableStores={mockStores}
-            />
             <Routes>
               <Route path="/" element={<Home groceryData={currentList} />} />
               <Route path="/grocery-list" element={<GroceryList />} />
