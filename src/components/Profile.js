@@ -64,14 +64,15 @@ function Profile() {
   return (
     <div className="p-6">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        {/* Profile Picture and Welcome Section */}
-        <div className="flex items-center space-x-6 p-12 bg-gradient-to-r from-blue-400 to-purple-500">
-          {/* <img
-            className="w-24 h-24 rounded-full border-4 border-white shadow-md"
-            src={userData.profileImage || '/placeholder-image.jpg'}
-            alt="Profile"
-          /> */}
-          <div>
+        {/* Profile Picture and Welcome Section with Background Image and Dark Overlay */}
+        <div
+          className="relative flex items-center space-x-6 p-12 bg-cover bg-center rounded-lg"
+          style={{ backgroundImage: 'url("https://shapeyourfutureok.com/wp-content/uploads/2018/10/25698-TSET-19-04-SYF-Website-Refresh_Header_5FoodGroups_F.jpg")' }} // Replace with your image URL
+        >
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
+          
+          <div className="relative z-10">
             <h1 className="text-3xl font-bold text-white">Welcome, {userData.first_name || 'User'}!</h1>
             <p className="text-white text-lg font-light">Slice your grocery bill and reduce food waste.</p>
           </div>

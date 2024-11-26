@@ -36,40 +36,62 @@ function DataDisplay({ searchTerm }) {
     }
   }, [searchTerm]);
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6 mt-4">
-      <h1 className="text-xl font-bold mb-4">Your Generated Recipe</h1>
+  // Helper function to format ingredients
+  const formatIngredient = (ingredient) => {
+    if (typeof ingredient === 'object') {
+      return `${ingredient.quantity} ${ingredient.name}${ingredient.preparation ? ` (${ingredient.preparation})` : ''}`;
+    }
+    return ingredient;
+  };
 
-      {loading && <p className="text-gray-500">Generating recipe...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+  return (
+    <div className="bg-white shadow-lg rounded-xl p-8 mt-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Your Generated Recipe</h1>
+
+      {loading && <p className="text-center text-gray-500">Generating recipe...</p>}
+      {error && <p className="text-center text-red-600">{error}</p>}
       {!loading && !recipe && !error && (
-        <p className="text-gray-500">No recipe found for "{searchTerm}".</p>
+        <p className="text-center text-gray-500">No recipe found for "{searchTerm}".</p>
       )}
 
       {recipe && (
         <div>
-          <h2 className="text-2xl font-semibold text-blue-600 mb-2">
-            {recipe.name || "Unnamed Recipe"}
-          </h2>
-          <p className="text-gray-600 mb-4">Recipe ID: {recipe._id}</p>
+          <h2 className="text-2xl font-semibold text-blue-600 mb-3">{recipe.name || "Unnamed Recipe"}</h2>
 
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Ingredients:</h3>
-          <ul className="list-disc list-inside space-y-1">
-            {recipe.ingredients?.map((ingredient, index) => (
-              <li key={index} className="text-gray-700">
-                {ingredient}
-              </li>
-            )) || <li className="text-gray-500">No ingredients listed.</li>}
-          </ul>
+          {/* Ingredients Section */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 mb-3">Ingredients:</h3>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+              {recipe.ingredients?.length > 0 ? (
+                recipe.ingredients.map((ingredient, index) => (
+                  <li key={index} className="text-gray-700">{formatIngredient(ingredient)}</li>
+                ))
+              ) : (
+                <li className="text-gray-500">No ingredients listed.</li>
+              )}
+            </ul>
+          </div>
 
-          <h3 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Instructions:</h3>
-          <ol className="list-decimal list-inside space-y-1">
-            {recipe.instructions?.map((instruction, index) => (
-              <li key={index} className="text-gray-700">
-                {instruction}
-              </li>
-            )) || <li className="text-gray-500">No instructions provided.</li>}
-          </ol>
+          {/* Instructions Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-3">Instructions:</h3>
+            <ol className="list-decimal list-inside space-y-2 pl-4">
+              {recipe.instructions?.length > 0 ? (
+                recipe.instructions.map((instruction, index) => (
+                  <li key={index} className="text-gray-700">{instruction}</li>
+                ))
+              ) : (
+                <li className="text-gray-500">No instructions provided.</li>
+              )}
+            </ol>
+          </div>
+
+          {/* Optional Prep/Cook Time */}
+          <div className="mt-4 text-gray-600">
+            <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
+            <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
+            <p><strong>Total Time:</strong> {recipe.total_time}</p>
+          </div>
         </div>
       )}
     </div>

@@ -12,27 +12,27 @@ function Recipes() {
   };
 
   return (
-    <div className="p-6">
+    <div className="min-h-screen bg-gray-100 p-6">
       {/* Page Header */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Recipe Generator</h1>
-        <p className="text-gray-600">
-          Enter what kind of recipe you'd like to make, and we'll generate one for you!
+      <div className="bg-white shadow-lg rounded-xl p-8 mb-6">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Recipe Generator</h1>
+        <p className="text-lg text-gray-600">
+          Enter a recipe idea, and we’ll generate a unique recipe for you!
         </p>
       </div>
 
       {/* Input for Recipe Prompt */}
-      <div className="flex items-center mb-4">
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 w-full">
         <input
           type="text"
-          placeholder="Enter a recipe idea (e.g., chocolate cake)..."
+          placeholder="e.g., chocolate cake, vegan tacos..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
         <button
           onClick={handleSearchSubmit}
-          className="ml-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          className="w-full sm:w-1/3 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
         >
           Generate Recipe
         </button>

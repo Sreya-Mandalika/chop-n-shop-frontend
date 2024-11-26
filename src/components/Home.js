@@ -1,12 +1,16 @@
 import React from 'react';
 import { Plus, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom'; // Import Link from React Router
 
 function Home({ groceryData }) {
   return (
     <div className="space-y-6 p-4">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg shadow-lg overflow-hidden">
-        <div className="flex items-center space-x-6 p-8">
+      {/* Welcome Banner with Background Image */}
+      <div 
+        className="bg-cover bg-center rounded-lg shadow-lg overflow-hidden"
+        style={{ backgroundImage: 'url("https://shapeyourfutureok.com/wp-content/uploads/2018/10/25698-TSET-19-04-SYF-Website-Refresh_Header_5FoodGroups_F.jpg")' }}  // Replace with your image URL
+      >
+        <div className="flex items-center space-x-6 p-8 bg-black bg-opacity-40">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-white">Welcome to Chop N' Shop!</h1>
             <p className="text-lg text-white opacity-90">
@@ -31,7 +35,7 @@ function Home({ groceryData }) {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-800">Current Shopping List</h2>
-          <button className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-md">
+          <button className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-md">
             <Plus className="h-5 w-5" />
             <span>New</span>
           </button>
@@ -74,15 +78,21 @@ function Home({ groceryData }) {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 border rounded-lg text-left bg-gray-50 hover:bg-gray-100 shadow-md">
-              <h3 className="font-medium text-gray-900">Compare Prices</h3>
-              <p className="text-sm text-gray-600">Find the best deals</p>
-            </button>
-            <button className="p-4 border rounded-lg text-left bg-gray-50 hover:bg-gray-100 shadow-md">
-              <h3 className="font-medium text-gray-900">Browse Recipes</h3>
-              <p className="text-sm text-gray-600">Get cooking inspiration</p>
-            </button>
+          <div className="grid grid-cols-2 gap-6">
+            {/* Link to Grocery List Page */}
+            <Link to="/grocery-list">
+              <button className="p-6 w-full border rounded-lg text-left bg-gray-50 hover:bg-gray-100 shadow-md text-lg font-semibold">
+                <h3 className="font-medium text-gray-900">Create a Grocery List</h3>
+                <p className="text-sm text-gray-600">Find the best deals</p>
+              </button>
+            </Link>
+            {/* Link to Recipe Book Page */}
+            <Link to="/recipe-book">
+              <button className="p-6 w-full border rounded-lg text-left bg-gray-50 hover:bg-gray-100 shadow-md text-lg font-semibold">
+                <h3 className="font-medium text-gray-900">Browse Recipe Book</h3>
+                <p className="text-sm text-gray-600">Get cooking inspiration</p>
+              </button>
+            </Link>
           </div>
         </div>
       </div>
