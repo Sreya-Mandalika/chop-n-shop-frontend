@@ -8,6 +8,7 @@ import Profile from './components/Profile';
 import Home from './components/Home';
 import PriceComparison from './components/Price';
 import UserLogin from './components/UserLogin';
+import LandingPage from './components/Landing';
 
 const mockCurrentList = {
   stores: {
@@ -35,6 +36,7 @@ const mockStores = [
 function App() {
   const [currentList, setCurrentList] = useState(mockCurrentList);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasVisitedLanding, setHasVisitedLanding] = useState(false);
 
   // Handlers
   const handleAddItem = (item) => {
@@ -62,26 +64,34 @@ function App() {
     console.log("User logged in:", userData);
   };
 
+  const handleVisitLanding = () => {
+    setHasVisitedLanding(true);
+  };
+
   return (
-    <div className="flex flex-col h-screen">
-      {!isLoggedIn ? (
-        <UserLogin onLoginOrSignup={handleLoginOrSignup} />
-      ) : (
-        <Router>
-          <Header loggedIn={isLoggedIn} userName="John" />
-          <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
-            <Routes>
-              <Route path="/" element={<Home groceryData={currentList} />} />
-              <Route path="/grocery-list" element={<GroceryList />} />
-              <Route path="/recipe-book" element={<Recipes />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/price-comparison" element={<PriceComparison />} />
-            </Routes>
-          </main>
-          <Navigation />
-        </Router>
-      )}
-    </div>
+    <Router>
+      <div className="flex flex-col h-screen">
+        {!hasVisitedLanding ? (
+          <LandingPage onVisit={handleVisitLanding} />
+        ) : !isLoggedIn ? (
+          <UserLogin onLoginOrSignup={handleLoginOrSignup} />
+        ) : (
+          <>
+            <Header loggedIn={isLoggedIn} userName="John" />
+            <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
+              <Routes>
+                <Route path="/" element={<Home groceryData={currentList} />} />
+                <Route path="/grocery-list" element={<GroceryList />} />
+                <Route path="/recipe-book" element={<Recipes />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/price-comparison" element={<PriceComparison />} />
+              </Routes>
+            </main>
+            <Navigation />
+          </>
+        )}
+      </div>
+    </Router>
   );
 }
 
