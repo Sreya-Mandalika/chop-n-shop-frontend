@@ -29,3 +29,28 @@ code {
 .animate-slide-in {
   animation: slide-in 1s ease-out;
 }
+.background-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.background-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 190%; /* Adjust width to fit better */
+  height: 190%; /* Adjust height to fit better */
+  background-image: url('https://i.pinimg.com/736x/ba/5c/d1/ba5cd1a52a3f82f096fd43151f2a88a6.jpg');
+  background-size: contain; /* Ensure the entire image is visible */
+  background-repeat: no-repeat; /* Prevent image repetition */
+  background-position: center; /* Center the background image */
+  transform: translate(-50%, -50%) rotate(90deg); /* Rotate the image by 90 degrees */
+}
+
+.form-container {
+  position: relative;
+  z-index: 1;
+}

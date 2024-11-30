@@ -80,7 +80,7 @@ function App() {
             <Header loggedIn={isLoggedIn} userName="John" />
             <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
               <Routes>
-                <Route path="/" element={<Home groceryData={currentList} />} />
+                <Route path="/home" element={<Home groceryData={currentList} />} />
                 <Route path="/grocery-list" element={<GroceryList />} />
                 <Route path="/recipe-book" element={<Recipes />} />
                 <Route path="/profile" element={<Profile />} />
