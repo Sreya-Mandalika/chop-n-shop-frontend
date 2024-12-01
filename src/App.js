@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import HeaderNav from './components/Header'; // Import the new combined HeaderNav component
 import GroceryList from './components/GroceryList';
 import Recipes from './components/Recipes';
@@ -31,10 +31,13 @@ const mockStores = [
   "Whole Foods",
 ];
 
-function App() {
+function MainApp() {
   const [currentList, setCurrentList] = useState(mockCurrentList);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasVisitedLanding, setHasVisitedLanding] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // Handlers
   const handleAddItem = (item) => {
@@ -60,33 +63,45 @@ function App() {
   const handleLoginOrSignup = (userData) => {
     setIsLoggedIn(true);
     console.log("User logged in:", userData);
+    navigate('/home');
   };
 
   const handleVisitLanding = () => {
     setHasVisitedLanding(true);
+    navigate('/login');
   };
 
+  // Determine if the header should be shown
+  const shouldShowHeader = location.pathname !== '/' && location.pathname !== '/login';
+
+  // Redirect to landing page on refresh if not logged in
+  useEffect(() => {
+    if (!isLoggedIn && location.pathname !== '/' && location.pathname !== '/login') {
+      navigate('/');
+    }
+  }, [isLoggedIn, location.pathname, navigate]);
+
+  return (
+    <>
+      {shouldShowHeader && <HeaderNav loggedIn={isLoggedIn} />}
+      <div className={`pt-24 flex flex-col h-screen ${shouldShowHeader ? '' : 'pt-0'}`}>
+        <Routes>
+          <Route path="/" element={<LandingPage onVisit={handleVisitLanding} />} />
+          <Route path="/login" element={<UserLogin onLoginOrSignup={handleLoginOrSignup} />} />
+          <Route path="/home" element={<Home groceryData={currentList} />} />
+          <Route path="/grocery-list" element={<GroceryList />} />
+          <Route path="/recipe-book" element={<Recipes />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
+function App() {
   return (
     <Router>
-      <HeaderNav loggedIn={isLoggedIn} /> {/* Use the new combined HeaderNav component */}
-      <div className="pt-24 flex flex-col h-screen"> {/* Adjust padding-top to account for the fixed header and nav */}
-        {!hasVisitedLanding ? (
-          <LandingPage onVisit={handleVisitLanding} />
-        ) : !isLoggedIn ? (
-          <UserLogin onLoginOrSignup={handleLoginOrSignup} />
-        ) : (
-          <>
-            <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
-              <Routes>
-                <Route path="/home" element={<Home groceryData={currentList} />} />
-                <Route path="/grocery-list" element={<GroceryList />} />
-                <Route path="/recipe-book" element={<Recipes />} />
-                <Route path="/profile" element={<Profile />} />
-              </Routes>
-            </main>
-          </>
-        )}
-      </div>
+      <MainApp />
     </Router>
   );
 }
