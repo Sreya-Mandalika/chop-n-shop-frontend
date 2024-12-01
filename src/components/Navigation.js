@@ -4,7 +4,7 @@ import { Home, User, Book, ShoppingCart, LineChart } from 'lucide-react';
 
 function Navigation() {
   const navItems = [
-    { id: 'home', icon: Home, label: 'Home', path: '/' },
+    { id: 'home', icon: Home, label: 'Home', path: '/home' },
     { id: 'profile', icon: User, label: 'Profile', path: '/profile' },
     { id: 'grocery-list', icon: ShoppingCart, label: 'Lists', path: '/grocery-list' },
     { id: 'recipe-book', icon: Book, label: 'Recipes', path: '/recipe-book' },
@@ -12,7 +12,7 @@ function Navigation() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-around py-2">
           {navItems.map(({ id, icon: Icon, label, path }) => (

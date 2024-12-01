@@ -1,10 +1,10 @@
 import React from 'react';
 import { Plus, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom'; // Import Link from React Router
+import { Link } from 'react-router-dom';
 
 function Home({ groceryData }) {
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 font-inter bg-white min-h-screen">
       {/* Welcome Banner with Background Image */}
       <div 
         className="bg-cover bg-center rounded-lg shadow-lg overflow-hidden"
@@ -12,18 +12,18 @@ function Home({ groceryData }) {
       >
         <div className="flex items-center space-x-6 p-8 bg-black bg-opacity-40">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-white">Welcome to Chop N' Shop!</h1>
+            <h1 className="text-4xl font-bold text-white">Welcome to Chop N' Shop!</h1>
             <p className="text-lg text-white opacity-90">
               Let's make grocery shopping smarter and easier.
             </p>
             <div className="flex gap-2 mt-3">
-              <span className="bg-white bg-opacity-20 text-white px-4 py-1 rounded-full text-sm shadow">
+              <span className="bg-spotifyGreen text-white px-4 py-1 rounded-full text-sm shadow">
                 Save Money
               </span>
-              <span className="bg-white bg-opacity-20 text-white px-4 py-1 rounded-full text-sm shadow">
+              <span className="bg-spotifyGreen text-white px-4 py-1 rounded-full text-sm shadow">
                 Reduce Waste
               </span>
-              <span className="bg-white bg-opacity-20 text-white px-4 py-1 rounded-full text-sm shadow">
+              <span className="bg-spotifyGreen text-white px-4 py-1 rounded-full text-sm shadow">
                 Eat Better
               </span>
             </div>
@@ -34,8 +34,8 @@ function Home({ groceryData }) {
       {/* Current List Section */}
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold text-gray-800">Current Shopping List</h2>
-          <button className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:shadow-md">
+          <h2 className="text-3xl font-semibold text-gray-800">Current Shopping List</h2>
+          <button className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-spotifyGreen text-white rounded-lg hover:shadow-md">
             <Plus className="h-5 w-5" />
             <span>New</span>
           </button>
@@ -44,7 +44,7 @@ function Home({ groceryData }) {
         {Object.entries(groceryData.stores).map(([store, data]) => (
           <div key={store} className="bg-white rounded-lg shadow-md">
             <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <h3 className="text-lg font-semibold text-gray-800">{store}</h3>
+              <h3 className="text-xl font-semibold text-gray-800">{store}</h3>
             </div>
             <div className="divide-y divide-gray-200">
               {data.items.map((item, index) => (
@@ -77,7 +77,7 @@ function Home({ groceryData }) {
       {/* Quick Actions Section */}
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+          <h2 className="text-3xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-6">
             {/* Link to Grocery List Page */}
             <Link to="/grocery-list">
@@ -102,7 +102,7 @@ function Home({ groceryData }) {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="h-5 w-5 text-gray-600" />
-            <h2 className="text-2xl font-semibold text-gray-800">Recent Activity</h2>
+            <h2 className="text-3xl font-semibold text-gray-800">Recent Activity</h2>
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-between py-2">

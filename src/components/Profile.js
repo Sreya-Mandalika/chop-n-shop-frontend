@@ -62,8 +62,8 @@ function Profile() {
   }
 
   return (
-    <div className="p-6">
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="p-6 bg-white min-h-screen">
+      <div className="bg-light-spotifyGreen shadow-lg rounded-lg overflow-hidden">
         {/* Profile Picture and Welcome Section with Background Image and Dark Overlay */}
         <div
           className="relative flex items-center space-x-6 p-12 bg-cover bg-center rounded-lg"
@@ -80,29 +80,27 @@ function Profile() {
 
         {/* User Details Section */}
         <div className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">User Details</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">User Details</h2>
           <p className="text-lg text-gray-700 mb-2">
             <strong>Email:</strong> {userData.email || 'Not available'}
-          </p>
-          <p className="text-lg text-gray-700 mb-6">
-            <strong>Budget:</strong> ${userData.Budget ?? 'Not set'}
           </p>
 
           {/* Allergies Section */}
           <div className="mb-6">
-            <label className="block text-xl text-gray-800 font-semibold mb-4">Allergies</label>
+            <label className="block text-xl text-gray-900 font-semibold mb-4">Allergies</label>
             <form onSubmit={handleAllergySubmit} className="flex gap-4 mb-6 items-center">
               <input
                 type="text"
                 value={allergyInput}
                 onChange={(e) => setAllergyInput(e.target.value)}
                 placeholder="Enter an allergy..."
-                className="flex-grow p-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
+                className="flex-grow p-3 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-spotifyGreen shadow-md"
                 style={{ fontSize: '16px' }}
               />
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-semibold rounded-md text-white bg-blue-500 hover:bg-purple-500 transition-all shadow-lg"
+                className="p-3 text-sm font-semibold rounded-md text-white bg-spotifyGreen hover:bg-dark-spotifyGreen transition-all shadow-lg"
+                style={{ height: '48px', paddingLeft: '40px', paddingRight: '40px' }} // Ensure height matches input and add padding for length
               >
                 Add
               </button>
@@ -112,7 +110,7 @@ function Profile() {
                 userData.allergies.map((allergy, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-4 py-2 rounded-full text-sm bg-purple-100 text-purple-800 shadow-sm"
+                    className="inline-flex items-center px-4 py-2 rounded-full text-sm bg-spotifyGreen text-white shadow-sm"
                   >
                     {allergy}
                     <button
@@ -124,7 +122,7 @@ function Profile() {
                   </span>
                 ))
               ) : (
-                <p className="text-gray-600">No allergies listed.</p>
+                <p className="text-gray-400">No allergies listed.</p>
               )}
             </div>
           </div>

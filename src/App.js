@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
+import HeaderNav from './components/Header'; // Import the new combined HeaderNav component
 import GroceryList from './components/GroceryList';
-import Navigation from './components/Navigation';
 import Recipes from './components/Recipes';
 import Profile from './components/Profile';
 import Home from './components/Home';
-import PriceComparison from './components/Price';
 import UserLogin from './components/UserLogin';
 import LandingPage from './components/Landing';
 
@@ -70,24 +68,22 @@ function App() {
 
   return (
     <Router>
-      <div className="flex flex-col h-screen">
+      <HeaderNav loggedIn={isLoggedIn} /> {/* Use the new combined HeaderNav component */}
+      <div className="pt-24 flex flex-col h-screen"> {/* Adjust padding-top to account for the fixed header and nav */}
         {!hasVisitedLanding ? (
           <LandingPage onVisit={handleVisitLanding} />
         ) : !isLoggedIn ? (
           <UserLogin onLoginOrSignup={handleLoginOrSignup} />
         ) : (
           <>
-            <Header loggedIn={isLoggedIn} userName="John" />
             <main className="flex-1 overflow-y-auto bg-gray-50 pb-16">
               <Routes>
                 <Route path="/home" element={<Home groceryData={currentList} />} />
                 <Route path="/grocery-list" element={<GroceryList />} />
                 <Route path="/recipe-book" element={<Recipes />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/price-comparison" element={<PriceComparison />} />
               </Routes>
             </main>
-            <Navigation />
           </>
         )}
       </div>
