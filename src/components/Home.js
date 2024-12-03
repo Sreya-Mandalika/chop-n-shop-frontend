@@ -45,7 +45,7 @@ function Home({ groceryData }) {
             </span>
           </div>
           <div className="mt-12 animate-bounce">
-            <a href="#main-content" className="text-lg underline">Scroll down to see more</a>
+            <a href="#main-content" className="text-lg underline">Scroll down to get started</a>
           </div>
         </div>
       </div>

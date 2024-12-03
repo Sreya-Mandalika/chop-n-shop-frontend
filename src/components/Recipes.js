@@ -1,116 +1,120 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import DataDisplay from './DataDisplay';
+import '../Css/Recipes.css';
 
 function Recipes() {
-  const [generateSearchTerm, setGenerateSearchTerm] = useState('');
-  const [searchSearchTerm, setSearchSearchTerm] = useState('');
-  const [submittedTerm, setSubmittedTerm] = useState('');
-  const [newRecipeData, setNewRecipeData] = useState(null); // Store generated recipe data
-  const [existingRecipeData, setExistingRecipeData] = useState(null); // Store existing recipe data
-  const [error, setError] = useState(null); // Store error messages
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newRecipe, setNewRecipe] = useState('');
+  const [recipes, setRecipes] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Handle generating a new recipe (using a prompt from the user)
-  const handleGenerateRecipeSubmit = async () => {
-    if (generateSearchTerm.trim()) {
-      setSubmittedTerm(generateSearchTerm); // Save the submitted search term
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
-      try {
-        const response = await axios.post('http://localhost:8000/generate_recipe', { prompt: generateSearchTerm });
-        setNewRecipeData(response.data); // Store generated recipe data
-        setExistingRecipeData(null); // Clear existing recipe data
-        setError(null); // Clear any previous error
-      } catch (err) {
-        setError('Error generating new recipe');
-        setNewRecipeData(null); // Clear previous data if error occurs
-      }
+  const fetchRecipes = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/recipes');
+      setRecipes(response.data);
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
     }
   };
 
-  // Handle searching for an existing recipe (by recipe name)
-  const handleSearchRecipeSubmit = async () => {
-    if (searchSearchTerm.trim()) {
-      setSubmittedTerm(searchSearchTerm); // Save the submitted search term
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
 
-      try {
-        const response = await axios.get(`http://localhost:8000/recipes/${searchSearchTerm}/`);
-        setExistingRecipeData(response.data); // Store fetched recipe data
-        setNewRecipeData(null); // Clear generated recipe data
-        setError(null); // Clear any previous error
-      } catch (err) {
-        setError('Recipe not found or error occurred');
-        setExistingRecipeData(null); // Clear previous data if error occurs
-      }
+    try {
+      const response = await axios.get(`http://localhost:8000/recipes/${searchTerm}`);
+      setRecipes([response.data]);
+    } catch (error) {
+      setErrorMessage('Recipe not found or error occurred');
+      console.error('Error searching recipe:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+
+    try {
+      const response = await axios.post('http://localhost:8000/recipes', { name: newRecipe });
+      setRecipes([...recipes, response.data]);
+      setNewRecipe('');
+    } catch (error) {
+      setErrorMessage('Error creating recipe');
+      console.error('Error creating recipe:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Page Header */}
-      <div className="bg-white shadow-lg rounded-xl p-8 mb-6">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-2">Recipe Generator & Search</h1>
-        <p className="text-lg text-gray-600">
-          Generate a new recipe or search for an existing one!
-        </p>
-      </div>
-
-      {/* Generate New Recipe Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 w-full">
-        <input
-          type="text"
-          placeholder="Generate a new recipe (e.g., chocolate cake, vegan tacos...)"
-          value={generateSearchTerm}
-          onChange={(e) => setGenerateSearchTerm(e.target.value)} // Update search term on change
-          className="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <button
-          onClick={handleGenerateRecipeSubmit} // Handle generate new recipe submit
-          className="w-full sm:w-1/3 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none"
-        >
-          Generate Recipe
-        </button>
-      </div>
-
-      {/* Search Existing Recipe Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6 w-full">
-        <input
-          type="text"
-          placeholder="Search for an existing recipe"
-          value={searchSearchTerm}
-          onChange={(e) => setSearchSearchTerm(e.target.value)} // Update search term on change
-          className="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <button
-          onClick={handleSearchRecipeSubmit} // Handle search existing recipe submit
-          className="w-full sm:w-1/3 p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
-        >
-          Search Recipe
-        </button>
-      </div>
-
-      {/* Display Error Message */}
-      {error && <p className="text-red-500 text-lg">{error}</p>}
-
-      {/* Display New Recipe (Generated) */}
-      {newRecipeData && (
-        <div className="bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{newRecipeData.name}</h2>
-          <p className="text-lg text-gray-700">{newRecipeData.instructions}</p>
-          {/* Display more details of the new generated recipe */}
+    <div className="font-inter bg-white min-h-screen">
+      {/* Hero Section with Background Image */}
+      <div
+        className="relative w-full h-[35rem] bg-cover bg-center flex items-center justify-center"
+        style={{ backgroundImage: 'url("https://foodconfidence.com/wp-content/uploads/2019/06/AdobeStock_163417612.jpeg")' }}  // Replace with your image URL
+      >
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        <div className="relative z-10 text-center text-white px-4">
+          <h1 className="text-4xl font-bold mb-4">Create and Search for Recipes</h1>
+          <div className="flex flex-col gap-4 justify-center mb-4 max-w-md mx-auto">
+            <form onSubmit={handleCreateSubmit} className="flex flex-col gap-2">
+              <input
+                type="text"
+                placeholder="Enter recipe name"
+                value={newRecipe}
+                onChange={(e) => setNewRecipe(e.target.value)}
+                className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              />
+              <button type="submit" className="bg-spotifyGreen text-white px-4 py-2 rounded-lg shadow">
+                {loading ? 'Creating...' : 'Create'}
+              </button>
+            </form>
+            <form onSubmit={handleSearchSubmit} className="flex flex-col gap-2">
+              <input
+                type="text"
+                placeholder="Search for a recipe"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              />
+              <button type="submit" className="bg-spotifyGreen text-white px-4 py-2 rounded-lg shadow">
+                {loading ? 'Searching...' : 'Search'}
+              </button>
+            </form>
+          </div>
+          <div className="mt-8">
+            <a href="#main-content" className="text-lg underline">Scroll down to view past recipes</a>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Display Existing Recipe (Fetched from DB) */}
-      {existingRecipeData && (
-        <div className="bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{existingRecipeData.name}</h2>
-          <p className="text-lg text-gray-700">{existingRecipeData.instructions}</p>
-          {/* Display more details of the existing recipe */}
+      {/* Main Content Section */}
+      <div id="main-content" className="pt-5 p-4 space-y-6">
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+
+        <div className="recipes-list">
+          <h2 className="text-2xl font-semibold mb-4">Past Recipes</h2>
+          {recipes.length > 0 ? (
+            recipes.map((recipe, index) => (
+              <div key={index} className="recipe-item bg-white p-6 rounded-lg shadow mb-4">
+                <h3 className="text-xl font-bold">{recipe.name}</h3>
+                <p>{recipe.description}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No recipes available.</p>
+          )}
         </div>
-      )}
-
-      {/* Optionally, show the result using DataDisplay if necessary */}
-      {submittedTerm && !newRecipeData && !existingRecipeData && <DataDisplay searchTerm={submittedTerm} />}
+      </div>
     </div>
   );
 }
