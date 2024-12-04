@@ -16,32 +16,32 @@ function GroceryListForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [groceryList, setGroceryList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [viewMode, setViewMode] = useState('recipe'); 
-  const [userGroceryLists, setUserGroceryLists] = useState([]); 
+  const [viewMode, setViewMode] = useState('recipe'); // 'recipe' or 'items'
+  const [userGroceryLists, setUserGroceryLists] = useState([]); // Store all the user's grocery lists
   const [listName, setListName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [newItemName, setNewItemName] = useState('');
   const [newItemStore, setNewItemStore] = useState('Trader Joe\'s');
-  
-
+  const [newItemPrice, setNewItemPrice] = useState('');
 
   const handleAddNewItem = async (listId) => {
-    if (!newItemName || !newItemStore) {
+    if (!newItemName || !newItemPrice || !newItemStore) {
       setErrorMessage('Please fill in all item details');
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
       }
-
+  
       const response = await axios.put(
         `http://localhost:8000/grocery_lists/${listId}/add_item`,
         {
           Item_name: newItemName,
           Store_name: newItemStore,
+          Price: parseFloat(newItemPrice)
         },
         {
           headers: {
@@ -49,11 +49,12 @@ function GroceryListForm() {
           }
         }
       );
-
+  
       if (response.data) {
         setSuccessMessage('Item added successfully');
         setNewItemName('');
-        fetchUserGroceryLists();  // Refresh the grocery lists
+        setNewItemPrice('');
+        fetchUserGroceryLists();
       }
     } catch (error) {
       setErrorMessage('Failed to add item');
@@ -61,7 +62,6 @@ function GroceryListForm() {
     }
   };
 
-  // When calling the delete endpoint, ensure you have a valid list ID
   const handleDelete = async (listId) => {
     if (!listId) {
       console.log("no id given");
@@ -80,12 +80,12 @@ function GroceryListForm() {
         }
       });
       
-      // Refresh the list after successful deletion
       fetchUserGroceryLists();
     } catch (error) {
       console.error('Error deleting list:', error);
     }
   };
+
   const fetchUserGroceryLists = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -107,15 +107,16 @@ function GroceryListForm() {
       setErrorMessage('Failed to fetch grocery lists');
     }
   };
+
   useEffect(() => {
-    fetchUserGroceryLists(); // Fetch lists when the component mounts
+    fetchUserGroceryLists(); 
   }, []);
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
     setErrorMessage('');
     setSuccessMessage('');
-    setGroceryList([]); // Reset grocery list when switching views
+    setGroceryList([]);
   };
 
   const handleInputChange = (e) => {
@@ -126,8 +127,6 @@ function GroceryListForm() {
     }));
   };
   
-  
-
   const addItem = () => {
     if (newItem.trim() !== '') {
       setPreferences((prevState) => ({
@@ -158,7 +157,7 @@ function GroceryListForm() {
             },
           }
         : {
-            list_name: listName, // Explicitly include the list name here
+            list_name: listName, 
             Budget: parseFloat(preferences.budget) || 0,
             Grocery_items: preferences.items,
             Dietary_preferences: preferences.dietaryPreferences,
@@ -184,7 +183,6 @@ function GroceryListForm() {
       setSuccessMessage('Grocery list generated successfully!');
       setGroceryList(response.data.grocery_list || []);
       fetchUserGroceryLists();
-      console.log(JSON.stringify(payload, null, 2));
       setListName('');
     } catch (error) {
       setErrorMessage('An error occurred while generating the list.');
@@ -192,44 +190,29 @@ function GroceryListForm() {
       setLoading(false);
     }
   };
-  
-  
+
   const filteredGroceryLists = userGroceryLists.filter(list => 
     list && list.list_name && list.list_name.toLowerCase().includes(searchQuery.toLowerCase())
-  ).map(list => {
-    if (list.recipe_name) {
-      // This is a recipe grocery list
-      return {
-        ...list,
-        "Whole Foods Market": {
-          items: list.grocery_list,
-          Total_Cost: list.total_cost
-        }
-      };
-    }
-    return list;
-  });
-  const fieldsToRemove = ['recipe_id', 'user_id', 'created_at', 'grocery_list', 'total_cost', 'over_budget'];
+  );
 
   const calculateTotalCost = () =>
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
 
   return (
-    <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
-    {/* Left Column: Grocery List Form */}
-      <div className="flex-1 max-w-md p-6 bg-white shadow-lg rounded-lg">
+    <div className="flex gap-3 p-6 bg-gray-100 min-h-screen">
+      <div className="flex-1 max-w p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Generate Your Grocery List</h2>
 
         <div className="flex justify-between mb-6">
           <button
             onClick={() => handleViewModeChange('recipe')}
-            className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
+            className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-[#9E7F4F] text-white' : 'bg-[#CBB099] text-gray-600'} rounded-md`}
           >
             From Recipe
           </button>
           <button
             onClick={() => handleViewModeChange('items')}
-            className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
+            className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-[#9E7F4F] text-white' : 'bg-[#CBB099] text-gray-600'} rounded-md`}
           >
             From Items
           </button>
@@ -237,17 +220,17 @@ function GroceryListForm() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-              <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
-                List Name
-              </label>
-              <input
-                type="text"
-                id="listName"
-                value={listName}
-                onChange={(e) => setListName(e.target.value)} 
-                className="mt-1 p-2 w-full border rounded-md shadow-sm"
-                placeholder="Enter a name for your list"
-              />
+            <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
+              List Name
+            </label>
+            <input
+              type="text"
+              id="listName"
+              value={listName}
+              onChange={(e) => setListName(e.target.value)} 
+              className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              placeholder="Enter a name for your list"
+            />
           </div>
           {viewMode === 'recipe' && (
             <div className="mb-4">
@@ -282,179 +265,154 @@ function GroceryListForm() {
                 <button
                   type="button"
                   onClick={addItem}
-                  className="mt-4 w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  Add Item
-                </button>
-              </div>
-              <ul className="mb-6">
-                {preferences.items.length > 0 ? (
-                  preferences.items.map((item, index) => (
-                    <li key={index} className="py-2 border-b text-gray-600">
-                      {item}
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-gray-500">No items added yet.</li>
-                )}
-              </ul>
-            </>
-          )}
-
-          {/* Common Preferences */}
-          <div className="mb-4">
-            <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
-              Budget
-            </label>
-            <input
-              type="number"
-              id="budget"
-              name="budget"
-              value={preferences.budget}
-              onChange={handleInputChange}
-              required
-              className="mt-1 p-2 w-full border rounded-md shadow-sm"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="dietaryPreferences" className="block text-sm font-medium text-gray-700">
-              Dietary Preferences
-            </label>
-            <input
-              type="text"
-              id="dietaryPreferences"
-              name="dietaryPreferences"
-              value={preferences.dietaryPreferences}
-              onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md shadow-sm"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">
-              Allergies (comma separated)
-            </label>
-            <input
-              type="text"
-              id="allergies"
-              name="allergies"
-              value={preferences.allergies}
-              onChange={handleInputChange}
-              className="mt-1 p-2 w-full border rounded-md shadow-sm"
-            />
-          </div>
-
-          {viewMode === 'items' && (
+                  className="mt-4 w-full py-2 px-4 bg-[#9E7F4F] text-white rounded-md hover:bg-[#9E7F4F] transition-all"
+                  >
+                    Add Item
+                  </button>
+                </div>
+                <ul className="mb-6">
+                  {preferences.items.length > 0 ? (
+                    preferences.items.map((item, index) => (
+                      <li key={index} className="py-2 border-b text-gray-600">
+                        {item}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No items added yet.</li>
+                  )}
+                </ul>
+              </>
+            )}
+    
+            {/* Common Preferences */}
             <div className="mb-4">
-              <label htmlFor="storePreference" className="block text-sm font-medium text-gray-700">
-                Store Preference
+              <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
+                Budget
+              </label>
+              <input
+                type="number"
+                id="budget"
+                name="budget"
+                value={preferences.budget}
+                onChange={handleInputChange}
+                required
+                className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              />
+            </div>
+    
+            <div className="mb-4">
+              <label htmlFor="dietaryPreferences" className="block text-sm font-medium text-gray-700">
+                Dietary Preferences
               </label>
               <select
-                id="storePreference"
-                name="storePreference"
-                value={preferences.storePreference}
+                id="dietaryPreferences"
+                name="dietaryPreferences"
+                value={preferences.dietaryPreferences}
                 onChange={handleInputChange}
                 className="mt-1 p-2 w-full border rounded-md shadow-sm"
               >
-                <option value="None">None</option>
-                <option value="Store1">Store1</option>
-                <option value="Store2">Store2</option>
+                <option value="">None</option>
+                <option value="vegan">Vegan</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="gluten-free">Gluten-Free</option>
+                <option value="lactose-free">Lactose-Free</option>
+                <option value="pescetarian">Pescetarian</option>
               </select>
             </div>
-          )}
-          <div className="mb-4">
-            <button
-              type="submit"
-              className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-              {loading ? 'Generating...' : 'Generate List'}
-            </button>
-          </div>
-        </form>
-
-        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
-        {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
-
-        {/* Display User's Grocery Lists */}
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Grocery Lists</h3>
-          <div className="mb-4">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 w-full border rounded-md shadow-sm"
-              placeholder="Search lists by name"
-            />
-          </div>
-          <div className="space-y-4">
-          {filteredGroceryLists.length > 0 ? (
+    
+            <div className="mb-4">
+              <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">
+                Allergies (comma separated)
+              </label>
+              <input
+                type="text"
+                id="allergies"
+                name="allergies"
+                value={preferences.allergies}
+                onChange={handleInputChange}
+                className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              />
+            </div>
+    
+            {viewMode === 'items' && (
+              <div className="mb-4">
+                <label htmlFor="storePreference" className="block text-sm font-medium text-gray-700">
+                  Store Preference
+                </label>
+                <select
+                  id="storePreference"
+                  name="storePreference"
+                  value={preferences.storePreference}
+                  onChange={handleInputChange}
+                  className="mt-1 p-2 w-full border rounded-md shadow-sm"
+                >
+                  <option value="None">None</option>
+                  <option value="Trader Joe's">Trader Joe's</option>
+                  <option value="Whole Foods Market">Whole Foods Market</option>
+                </select>
+              </div>
+            )}
+            <div className="mb-4">
+              <button
+                type="submit"
+                className="w-full py-3 px-4 bg-[#9E7F4F] text-white rounded-md hover:bg-[#9E7F4F] transition-all"
+              >
+                {loading ? 'Generating...' : 'Generate List'}
+              </button>
+            </div>
+          </form>
+    
+          {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+          {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+        </div>
+          {/* Display User's Grocery Lists */}
+          <div className="flex-1 max-w-lg p-6 bg-white shadow-lg rounded-lg">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Grocery Lists</h2>
+            <div className="mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="p-2 w-full border rounded-md shadow-sm"
+                placeholder="Search lists by name"
+              />
+            </div>
+            <div className="space-y-4">
+              {filteredGroceryLists.length > 0 ? (
                 filteredGroceryLists.map((list, index) => (
-                  <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                  <div key={index} className="p-4 bg-gradient-to-r from-[#E4D1B9] to-[#D3B59F] rounded-lg shadow-lg">
                     <div className="relative">
                       <button onClick={() => handleDelete(list._id)} className="absolute top-2 right-2 text-red-600 hover:text-red-800">
                         Delete
                       </button>
                     </div>
-                    
                     <h1 className="text-xl font-bold mb-2 text-gray-800">
                       {list.list_name || list.recipe_name || 'Unnamed List'}
                     </h1>
-                    {Object.entries(list ?? {}).filter(([key]) => !fieldsToRemove.includes(key) && key !== '_id' && key !== 'list_name' && key !== 'recipe_name').map(([storeName, storeData]) => (
-                      <div key={storeName}>
-                        <h4 className="font-medium text-gray-700">{storeName}</h4>
-                        {storeData?.items?.map((item, idx) => (
+                    {list["Whole Foods Market"]?.items && (
+                      <div>
+                        <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
+                        {list["Whole Foods Market"].items.map((item, idx) => (
                           <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
-                            <span>{item?.item_name || item?.Item_name}</span>
-                            <span>${item?.price || item?.Price}</span>
+                            <span>{item.item_name || item.Item_name}</span>
+                            <span>${item.price || item.Price}</span>
                           </div>
                         ))}
                         <div className="mt-2 text-right text-sm font-medium">
-                          Total: ${storeData?.Total_Cost}
+                          Total: ${list["Whole Foods Market"].Total_Cost}
                         </div>
                       </div>
-                    ))}
-
-
-                    {/* Add item form */}
-                    <div className="mt-4 p-4 bg-white rounded-lg">
-                      <h3 className="text-lg font-semibold mb-3">Add New Item</h3>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                        <input
-                          type="text"
-                          value={newItemName}
-                          onChange={(e) => setNewItemName(e.target.value)}
-                          placeholder="Item name"
-                          className="p-2 border rounded"
-                        />
-                        <select
-                          value={newItemStore}
-                          onChange={(e) => setNewItemStore(e.target.value)}
-                          className="p-2 border rounded"
-                        >
-                          <option value="Whole Foods Market">Whole Foods Market</option>
-                          <option value="Trader Joe's">Trader Joe's</option>
-                        </select>
-                  
-                        <button
-                          onClick={() => handleAddNewItem(list._id)}
-                          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-                        >
-                          Add Item
-                        </button>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))
               ) : (
                 <p className="text-gray-500">No grocery lists available.</p>
               )}
+            </div>
           </div>
-        </div>
-    </div>
-    </div>
-  );
-}
-
-export default GroceryListForm;
+          </div>
+  
+    );
+  }
+  
+  export default GroceryListForm;
