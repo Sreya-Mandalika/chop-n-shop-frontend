@@ -215,241 +215,244 @@ function GroceryListForm() {
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Generate Your Grocery List</h2>
+    <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
+    {/* Left Column: Grocery List Form */}
+      <div className="flex-1 max-w-md p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Generate Your Grocery List</h2>
 
-      <div className="flex justify-between mb-6">
-        <button
-          onClick={() => handleViewModeChange('recipe')}
-          className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
-        >
-          From Recipe
-        </button>
-        <button
-          onClick={() => handleViewModeChange('items')}
-          className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
-        >
-          From Items
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-            <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
-              List Name
-            </label>
-            <input
-              type="text"
-              id="listName"
-              value={listName}
-              onChange={(e) => setListName(e.target.value)} 
-              className="mt-1 p-2 w-full border rounded-md shadow-sm"
-              placeholder="Enter a name for your list"
-            />
+        <div className="flex justify-between mb-6">
+          <button
+            onClick={() => handleViewModeChange('recipe')}
+            className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
+          >
+            From Recipe
+          </button>
+          <button
+            onClick={() => handleViewModeChange('items')}
+            className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'} rounded-md`}
+          >
+            From Items
+          </button>
         </div>
-        {viewMode === 'recipe' && (
+
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="recipeName" className="block text-sm font-medium text-gray-700">
-              Recipe Name
+              <label htmlFor="listName" className="block text-sm font-medium text-gray-700">
+                List Name
+              </label>
+              <input
+                type="text"
+                id="listName"
+                value={listName}
+                onChange={(e) => setListName(e.target.value)} 
+                className="mt-1 p-2 w-full border rounded-md shadow-sm"
+                placeholder="Enter a name for your list"
+              />
+          </div>
+          {viewMode === 'recipe' && (
+            <div className="mb-4">
+              <label htmlFor="recipeName" className="block text-sm font-medium text-gray-700">
+                Recipe Name
+              </label>
+              <input
+                type="text"
+                id="recipeName"
+                value={recipeName}
+                onChange={(e) => setRecipeName(e.target.value)}
+                required
+                className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              />
+            </div>
+          )}
+
+          {viewMode === 'items' && (
+            <>
+              <div className="mb-4">
+                <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">
+                  Add Items
+                </label>
+                <input
+                  type="text"
+                  id="item-name"
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                  className="mt-1 p-2 w-full border rounded-md shadow-sm"
+                  placeholder="Enter item name"
+                />
+                <button
+                  type="button"
+                  onClick={addItem}
+                  className="mt-4 w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Add Item
+                </button>
+              </div>
+              <ul className="mb-6">
+                {preferences.items.length > 0 ? (
+                  preferences.items.map((item, index) => (
+                    <li key={index} className="py-2 border-b text-gray-600">
+                      {item}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No items added yet.</li>
+                )}
+              </ul>
+            </>
+          )}
+
+          {/* Common Preferences */}
+          <div className="mb-4">
+            <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
+              Budget
             </label>
             <input
-              type="text"
-              id="recipeName"
-              value={recipeName}
-              onChange={(e) => setRecipeName(e.target.value)}
+              type="number"
+              id="budget"
+              name="budget"
+              value={preferences.budget}
+              onChange={handleInputChange}
               required
               className="mt-1 p-2 w-full border rounded-md shadow-sm"
             />
           </div>
-        )}
 
-        {viewMode === 'items' && (
-          <>
-            <div className="mb-4">
-              <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">
-                Add Items
-              </label>
-              <input
-                type="text"
-                id="item-name"
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                className="mt-1 p-2 w-full border rounded-md shadow-sm"
-                placeholder="Enter item name"
-              />
-              <button
-                type="button"
-                onClick={addItem}
-                className="mt-4 w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Add Item
-              </button>
-            </div>
-            <ul className="mb-6">
-              {preferences.items.length > 0 ? (
-                preferences.items.map((item, index) => (
-                  <li key={index} className="py-2 border-b text-gray-600">
-                    {item}
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500">No items added yet.</li>
-              )}
-            </ul>
-          </>
-        )}
-
-        {/* Common Preferences */}
-        <div className="mb-4">
-          <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
-            Budget
-          </label>
-          <input
-            type="number"
-            id="budget"
-            name="budget"
-            value={preferences.budget}
-            onChange={handleInputChange}
-            required
-            className="mt-1 p-2 w-full border rounded-md shadow-sm"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="dietaryPreferences" className="block text-sm font-medium text-gray-700">
-            Dietary Preferences
-          </label>
-          <input
-            type="text"
-            id="dietaryPreferences"
-            name="dietaryPreferences"
-            value={preferences.dietaryPreferences}
-            onChange={handleInputChange}
-            className="mt-1 p-2 w-full border rounded-md shadow-sm"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">
-            Allergies (comma separated)
-          </label>
-          <input
-            type="text"
-            id="allergies"
-            name="allergies"
-            value={preferences.allergies}
-            onChange={handleInputChange}
-            className="mt-1 p-2 w-full border rounded-md shadow-sm"
-          />
-        </div>
-
-        {viewMode === 'items' && (
           <div className="mb-4">
-            <label htmlFor="storePreference" className="block text-sm font-medium text-gray-700">
-              Store Preference
+            <label htmlFor="dietaryPreferences" className="block text-sm font-medium text-gray-700">
+              Dietary Preferences
             </label>
-            <select
-              id="storePreference"
-              name="storePreference"
-              value={preferences.storePreference}
+            <input
+              type="text"
+              id="dietaryPreferences"
+              name="dietaryPreferences"
+              value={preferences.dietaryPreferences}
               onChange={handleInputChange}
               className="mt-1 p-2 w-full border rounded-md shadow-sm"
-            >
-              <option value="None">None</option>
-              <option value="Store1">Store1</option>
-              <option value="Store2">Store2</option>
-            </select>
+            />
           </div>
-        )}
-        <div className="mb-4">
-          <button
-            type="submit"
-            className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
-          >
-            {loading ? 'Generating...' : 'Generate List'}
-          </button>
-        </div>
-      </form>
 
-      {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
-      {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
+          <div className="mb-4">
+            <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">
+              Allergies (comma separated)
+            </label>
+            <input
+              type="text"
+              id="allergies"
+              name="allergies"
+              value={preferences.allergies}
+              onChange={handleInputChange}
+              className="mt-1 p-2 w-full border rounded-md shadow-sm"
+            />
+          </div>
 
-      {/* Display User's Grocery Lists */}
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Grocery Lists</h3>
-        <div className="mb-4">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-2 w-full border rounded-md shadow-sm"
-            placeholder="Search lists by name"
-          />
-        </div>
-        <div className="space-y-4">
-        {filteredGroceryLists.length > 0 ? (
-              filteredGroceryLists.map((list, index) => (
-                <div key={index} className="p-4 bg-gray-100 rounded-lg">
-                  <div className="relative">
-                    <button onClick={() => handleDelete(list._id)} className="absolute top-2 right-2 text-red-600 hover:text-red-800">
-                      Delete
-                    </button>
-                  </div>
-                  
-                  <h1 className="text-xl font-bold mb-2 text-gray-800">
-                    {list.list_name || list.recipe_name || 'Unnamed List'}
-                  </h1>
-                  {Object.entries(list ?? {}).filter(([key]) => !fieldsToRemove.includes(key) && key !== '_id' && key !== 'list_name' && key !== 'recipe_name').map(([storeName, storeData]) => (
-                    <div key={storeName}>
-                      <h4 className="font-medium text-gray-700">{storeName}</h4>
-                      {storeData?.items?.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
-                          <span>{item?.item_name || item?.Item_name}</span>
-                          <span>${item?.price || item?.Price}</span>
-                        </div>
-                      ))}
-                      <div className="mt-2 text-right text-sm font-medium">
-                        Total: ${storeData?.Total_Cost}
-                      </div>
-                    </div>
-                  ))}
+          {viewMode === 'items' && (
+            <div className="mb-4">
+              <label htmlFor="storePreference" className="block text-sm font-medium text-gray-700">
+                Store Preference
+              </label>
+              <select
+                id="storePreference"
+                name="storePreference"
+                value={preferences.storePreference}
+                onChange={handleInputChange}
+                className="mt-1 p-2 w-full border rounded-md shadow-sm"
+              >
+                <option value="None">None</option>
+                <option value="Store1">Store1</option>
+                <option value="Store2">Store2</option>
+              </select>
+            </div>
+          )}
+          <div className="mb-4">
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              {loading ? 'Generating...' : 'Generate List'}
+            </button>
+          </div>
+        </form>
 
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+        {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
 
-                  {/* Add item form */}
-                  <div className="mt-4 p-4 bg-white rounded-lg">
-                    <h3 className="text-lg font-semibold mb-3">Add New Item</h3>
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                      <input
-                        type="text"
-                        value={newItemName}
-                        onChange={(e) => setNewItemName(e.target.value)}
-                        placeholder="Item name"
-                        className="p-2 border rounded"
-                      />
-                      <select
-                        value={newItemStore}
-                        onChange={(e) => setNewItemStore(e.target.value)}
-                        className="p-2 border rounded"
-                      >
-                        <option value="Whole Foods Market">Whole Foods Market</option>
-                        <option value="Trader Joe's">Trader Joe's</option>
-                      </select>
-                
-                      <button
-                        onClick={() => handleAddNewItem(list._id)}
-                        className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-                      >
-                        Add Item
+        {/* Display User's Grocery Lists */}
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Grocery Lists</h3>
+          <div className="mb-4">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="p-2 w-full border rounded-md shadow-sm"
+              placeholder="Search lists by name"
+            />
+          </div>
+          <div className="space-y-4">
+          {filteredGroceryLists.length > 0 ? (
+                filteredGroceryLists.map((list, index) => (
+                  <div key={index} className="p-4 bg-gray-100 rounded-lg">
+                    <div className="relative">
+                      <button onClick={() => handleDelete(list._id)} className="absolute top-2 right-2 text-red-600 hover:text-red-800">
+                        Delete
                       </button>
                     </div>
+                    
+                    <h1 className="text-xl font-bold mb-2 text-gray-800">
+                      {list.list_name || list.recipe_name || 'Unnamed List'}
+                    </h1>
+                    {Object.entries(list ?? {}).filter(([key]) => !fieldsToRemove.includes(key) && key !== '_id' && key !== 'list_name' && key !== 'recipe_name').map(([storeName, storeData]) => (
+                      <div key={storeName}>
+                        <h4 className="font-medium text-gray-700">{storeName}</h4>
+                        {storeData?.items?.map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
+                            <span>{item?.item_name || item?.Item_name}</span>
+                            <span>${item?.price || item?.Price}</span>
+                          </div>
+                        ))}
+                        <div className="mt-2 text-right text-sm font-medium">
+                          Total: ${storeData?.Total_Cost}
+                        </div>
+                      </div>
+                    ))}
+
+
+                    {/* Add item form */}
+                    <div className="mt-4 p-4 bg-white rounded-lg">
+                      <h3 className="text-lg font-semibold mb-3">Add New Item</h3>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                        <input
+                          type="text"
+                          value={newItemName}
+                          onChange={(e) => setNewItemName(e.target.value)}
+                          placeholder="Item name"
+                          className="p-2 border rounded"
+                        />
+                        <select
+                          value={newItemStore}
+                          onChange={(e) => setNewItemStore(e.target.value)}
+                          className="p-2 border rounded"
+                        >
+                          <option value="Whole Foods Market">Whole Foods Market</option>
+                          <option value="Trader Joe's">Trader Joe's</option>
+                        </select>
+                  
+                        <button
+                          onClick={() => handleAddNewItem(list._id)}
+                          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                        >
+                          Add Item
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No grocery lists available.</p>
-            )}
+                ))
+              ) : (
+                <p className="text-gray-500">No grocery lists available.</p>
+              )}
+          </div>
         </div>
-      </div>
+    </div>
     </div>
   );
 }
