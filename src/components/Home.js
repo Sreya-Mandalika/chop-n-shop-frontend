@@ -1,9 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios'; // Import axios for fetching user data
 
 function Home({ groceryData }) {
+  const [userName, setUserName] = useState(''); // State to store the user's name
+
   useEffect(() => {
+    // Fetch the user's name
+    const fetchUserName = async () => {
+      try {
+        const userEmail = localStorage.getItem('user_email');
+        if (!userEmail) return;
+
+        const response = await axios.get('http://localhost:8000/api/user', {
+          params: { user_email: userEmail },
+        });
+
+        const { first_name } = response.data;
+        setUserName(first_name || 'User');
+      } catch (err) {
+        console.error('Failed to fetch user data:', err);
+      }
+    };
+
+    fetchUserName();
+
     const handleScroll = () => {
       const elements = document.querySelectorAll('.animate-fade-in-on-scroll');
       elements.forEach((el) => {
@@ -31,7 +53,7 @@ function Home({ groceryData }) {
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl font-bold mb-4 animate-slide-in">Welcome to Chop N' Shop!</h1>
+          <h1 className="text-5xl font-bold mb-4 animate-slide-in">Welcome to Chop N' Shop, {userName}!</h1>
           <p className="text-xl mb-8 animate-slide-in">Let's make grocery shopping smarter and easier.</p>
           <div className="flex gap-2 justify-center">
             <span className="bg-spotifyGreen text-white px-4 py-2 rounded-full text-sm shadow">

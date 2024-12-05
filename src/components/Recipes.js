@@ -8,6 +8,7 @@ function Recipes() {
   const [recipes, setRecipes] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [expandedRecipe, setExpandedRecipe] = useState(null); // State to track which recipe is expanded
 
   useEffect(() => {
     fetchRecipes();
@@ -43,15 +44,36 @@ function Recipes() {
     setLoading(true);
     setErrorMessage('');
 
+    if (!newRecipe.trim()) {
+      setErrorMessage('Recipe name cannot be empty');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:8000/recipes', { name: newRecipe });
+      const payload = { name: newRecipe.trim() };
+      console.log('Creating recipe with payload:', payload);
+
+      const response = await axios.post('http://localhost:8000/generate_recipe', payload);
       setRecipes([...recipes, response.data]);
       setNewRecipe('');
     } catch (error) {
       setErrorMessage('Error creating recipe');
-      console.error('Error creating recipe:', error);
+      console.error('Error creating recipe:', error.response ? error.response.data : error);
+      if (error.response && error.response.data) {
+        console.error('Backend error detail:', error.response.data.detail);
+      }
+      console.error('Full error response:', error); // Log the full error response
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleExpandRecipe = (index) => {
+    if (expandedRecipe === index) {
+      setExpandedRecipe(null); // Collapse if already expanded
+    } else {
+      setExpandedRecipe(index); // Expand the selected recipe
     }
   };
 
@@ -72,7 +94,7 @@ function Recipes() {
                 placeholder="Enter recipe name"
                 value={newRecipe}
                 onChange={(e) => setNewRecipe(e.target.value)}
-                className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-black"
               />
               <button type="submit" className="bg-spotifyGreen text-white px-4 py-2 rounded-lg shadow">
                 {loading ? 'Creating...' : 'Create'}
@@ -85,6 +107,7 @@ function Recipes() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                style={{ color: 'black' }}
               />
               <button type="submit" className="bg-spotifyGreen text-white px-4 py-2 rounded-lg shadow">
                 {loading ? 'Searching...' : 'Search'}
@@ -107,7 +130,29 @@ function Recipes() {
             recipes.map((recipe, index) => (
               <div key={index} className="recipe-item bg-white p-6 rounded-lg shadow mb-4">
                 <h3 className="text-xl font-bold">{recipe.name}</h3>
-                <p>{recipe.description}</p>
+                {expandedRecipe === index && (
+                  <div>
+                    <p><strong>Ingredients:</strong></p>
+                    <ul className="list-disc list-inside">
+                      {recipe.ingredients.map((ingredient, i) => (
+                        <li key={i}>{ingredient}</li>
+                      ))}
+                    </ul>
+                    <p><strong>Instructions:</strong></p>
+                    <ol className="list-decimal list-inside">
+                      {recipe.instructions.map((instruction, i) => (
+                        <li key={i}>{instruction}</li>
+                      ))}
+                    </ol>
+                    <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
+                    <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
+                    <p><strong>Total Time:</strong> {recipe.total_time}</p>
+                    <p><strong>Link:</strong> {recipe.link}</p>
+                  </div>
+                )}
+                <button onClick={() => toggleExpandRecipe(index)} className="mt-2 text-blue-500 underline">
+                  {expandedRecipe === index ? 'Show Less' : 'Show More'}
+                </button>
               </div>
             ))
           ) : (
