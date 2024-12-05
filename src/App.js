@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import HeaderNav from './components/Header'; // Import the new combined HeaderNav component
+import HeaderNav from './components/HeaderNav'; // Import the new combined HeaderNav component
 import GroceryList from './components/GroceryList';
 import Recipes from './components/Recipes';
 import Profile from './components/Profile';
