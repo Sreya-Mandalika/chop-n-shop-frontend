@@ -137,22 +137,6 @@ function Home({ groceryData }) {
                   <p className="text-gray-600">Browse and add your favorite recipes.</p>
                 </button>
               </Link>
-
-              {/* Link to Profile Page */}
-              <Link to="/profile">
-                <button className="p-6 w-full border rounded-lg text-left bg-gray-50 hover:bg-gray-100 transition">
-                  <h3 className="text-2xl font-semibold text-gray-800">Profile</h3>
-                  <p className="text-gray-600">View and edit your profile details.</p>
-                </button>
-              </Link>
-
-              {/* Link to Price Comparison Page */}
-              <Link to="/price-comparison">
-                <button className="p-6 w-full border rounded-lg text-left bg-gray-50 hover:bg-gray-100 transition">
-                  <h3 className="text-2xl font-semibold text-gray-800">Price Comparison</h3>
-                  <p className="text-gray-600">Compare prices across different stores.</p>
-                </button>
-              </Link>
             </div>
           </div>
         </div>

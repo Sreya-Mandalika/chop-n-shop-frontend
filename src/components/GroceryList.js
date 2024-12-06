@@ -130,7 +130,7 @@ function GroceryListForm() {
   
   const addItem = () => {
     if (newItem.trim() !== '') {
-      setPreferences((prevState) => ({
+      setPreferences(prevState => ({
         ...prevState,
         items: [...prevState.items, newItem.trim()],
       }));
@@ -198,6 +198,13 @@ function GroceryListForm() {
 
   const calculateTotalCost = () =>
     groceryList.reduce((total, item) => total + parseFloat(item.price || 0), 0).toFixed(2);
+
+  const handleRemoveItem = (index) => {
+    setPreferences(prevState => ({
+      ...prevState,
+      items: prevState.items.filter((_, i) => i !== index)
+    }));
+  };
 
   return (
     <div className="flex gap-3 p-6 bg-gray-100 min-h-screen">
@@ -274,8 +281,14 @@ function GroceryListForm() {
                 <ul className="mb-6">
                   {preferences.items.length > 0 ? (
                     preferences.items.map((item, index) => (
-                      <li key={index} className="py-2 border-b text-gray-600">
+                      <li key={index} className="py-2 border-b text-gray-600 flex justify-between items-center">
                         {item}
+                        <button
+                          onClick={() => handleRemoveItem(index)}
+                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all"
+                        >
+                          Remove
+                        </button>
                       </li>
                     ))
                   ) : (
