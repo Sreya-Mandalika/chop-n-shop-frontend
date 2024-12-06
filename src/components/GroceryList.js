@@ -101,6 +101,7 @@ function GroceryListForm() {
       
       if (response.data && response.data.grocery_lists) {
         setUserGroceryLists(response.data.grocery_lists);
+        console.log(response.data.grocery_lists)
       }
     } catch (error) {
       console.error('Error fetching grocery lists:', error);
@@ -389,7 +390,8 @@ function GroceryListForm() {
                     <h1 className="text-xl font-bold mb-2 text-gray-800">
                       {list.list_name || list.recipe_name || 'Unnamed List'}
                     </h1>
-          
+                    {list.created_at && ( <p className="text-sm text-gray-600 mb-2">Created on: {new Date(list.created_at).toLocaleString()}</p>)}
+               
                     {/* Display Whole Foods Market List */}
                     {list["Whole Foods Market"]?.items && (
                       <div>
