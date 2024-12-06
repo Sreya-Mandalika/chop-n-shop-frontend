@@ -150,7 +150,7 @@ function Recipes() {
                     <p><strong>Link:</strong> {recipe.link}</p>
                   </div>
                 )}
-                <button onClick={() => toggleExpandRecipe(index)} className="mt-2 text-blue-500 underline">
+                <button onClick={() => toggleExpandRecipe(index)} className="mt-2 text-spotifyGreen underline">
                   {expandedRecipe === index ? 'Show Less' : 'Show More'}
                 </button>
               </div>

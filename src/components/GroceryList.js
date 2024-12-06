@@ -206,13 +206,13 @@ function GroceryListForm() {
         <div className="flex justify-between mb-6">
           <button
             onClick={() => handleViewModeChange('recipe')}
-            className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-[#9E7F4F] text-white' : 'bg-[#CBB099] text-gray-600'} rounded-md`}
+            className={`w-48 py-3 px-4 ${viewMode === 'recipe' ? 'bg-spotifyGreen text-white' : 'bg-[#91C795] text-gray-600'} rounded-md`}
           >
             From Recipe
           </button>
           <button
             onClick={() => handleViewModeChange('items')}
-            className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-[#9E7F4F] text-white' : 'bg-[#CBB099] text-gray-600'} rounded-md`}
+            className={`w-48 py-3 px-4 ${viewMode === 'items' ? 'bg-spotifyGreen text-white' : 'bg-[#91C795] text-gray-600'} rounded-md`}
           >
             From Items
           </button>
@@ -265,7 +265,7 @@ function GroceryListForm() {
                 <button
                   type="button"
                   onClick={addItem}
-                  className="mt-4 w-full py-2 px-4 bg-[#9E7F4F] text-white rounded-md hover:bg-[#9E7F4F] transition-all"
+                  className="mt-4 w-full py-2 px-4 bg-spotifyGreen text-white rounded-md hover:bg-[#91C795] transition-all"
                   >
                     Add Item
                   </button>
@@ -355,7 +355,7 @@ function GroceryListForm() {
             <div className="mb-4">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-[#9E7F4F] text-white rounded-md hover:bg-[#9E7F4F] transition-all"
+                className="w-full py-3 px-4 bg-spotifyGreen text-white rounded-md hover:bg-[#91C795] transition-all"
               >
                 {loading ? 'Generating...' : 'Generate List'}
               </button>
@@ -380,7 +380,7 @@ function GroceryListForm() {
             <div className="space-y-4">
               {filteredGroceryLists.length > 0 ? (
                 filteredGroceryLists.map((list, index) => (
-                  <div key={index} className="p-4 bg-gradient-to-r from-[#E4D1B9] to-[#D3B59F] rounded-lg shadow-lg">
+                  <div key={index} className="p-4 bg-[#91C795] rounded-lg shadow-lg">
                     <div className="relative">
                       <button onClick={() => handleDelete(list._id)} className="absolute top-2 right-2 text-red-600 hover:text-red-800">
                         Delete
@@ -389,6 +389,8 @@ function GroceryListForm() {
                     <h1 className="text-xl font-bold mb-2 text-gray-800">
                       {list.list_name || list.recipe_name || 'Unnamed List'}
                     </h1>
+          
+                    {/* Display Whole Foods Market List */}
                     {list["Whole Foods Market"]?.items && (
                       <div>
                         <h4 className="font-medium text-gray-700">Whole Foods Market</h4>
@@ -400,6 +402,22 @@ function GroceryListForm() {
                         ))}
                         <div className="mt-2 text-right text-sm font-medium">
                           Total: ${list["Whole Foods Market"].Total_Cost}
+                        </div>
+                      </div>
+                    )}
+          
+                    {/* Display Trader Joe's List */}
+                    {list["Trader Joe's"]?.items && (
+                      <div>
+                        <h4 className="font-medium text-gray-700">Trader Joe's</h4>
+                        {list["Trader Joe's"].items.map((item, idx) => (
+                          <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
+                            <span>{item.item_name || item.Item_name}</span>
+                            <span>${item.price || item.Price}</span>
+                          </div>
+                        ))}
+                        <div className="mt-2 text-right text-sm font-medium">
+                          Total: ${list["Trader Joe's"].Total_Cost}
                         </div>
                       </div>
                     )}
