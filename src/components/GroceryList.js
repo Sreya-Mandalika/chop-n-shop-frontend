@@ -62,6 +62,32 @@ function GroceryListForm() {
     }
   };
 
+  const handleDeleteItem = async (listId, itemName) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+  
+      const response = await axios.delete(
+        `http://localhost:8000/grocery_lists/${listId}/items/${itemName}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+  
+      if (response.data) {
+        setSuccessMessage('Item deleted successfully');
+        fetchUserGroceryLists(); // Refresh the list after deletion
+      }
+    } catch (error) {
+      setErrorMessage('Failed to delete item');
+      console.error('Error:', error);
+    }
+  };
+
   const handleDelete = async (listId) => {
     if (!listId) {
       console.log("no id given");
@@ -413,6 +439,9 @@ function GroceryListForm() {
                           <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
                             <span>{item.item_name || item.Item_name}</span>
                             <span>${item.price || item.Price}</span>
+                            <button onClick={() => handleDeleteItem(list._id, item.item_name || item.Item_name)}
+                                className="ml-2 text-red-500 hover:text-red-700">Delete
+                              </button>
                           </div>
                         ))}
                         <div className="mt-2 text-right text-sm font-medium">
@@ -429,6 +458,9 @@ function GroceryListForm() {
                           <div key={idx} className="flex justify-between text-sm text-gray-600 mt-1">
                             <span>{item.item_name || item.Item_name}</span>
                             <span>${item.price || item.Price}</span>
+                            <button onClick={() => handleDeleteItem(list._id, item.item_name || item.Item_name)}
+                                className="ml-2 text-red-500 hover:text-red-700">Delete
+                              </button>
                           </div>
                         ))}
                         <div className="mt-2 text-right text-sm font-medium">
