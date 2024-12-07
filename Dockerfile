@@ -23,17 +23,17 @@ FROM nginx:alpine
 COPY --from=builder /chop-n-shop-frontend/build /usr/share/nginx/html
 
 # Set default PORT if not provided
-ENV PORT 80
+ENV PORT 8080  
 
 # Configure NGINX to read PORT from environment variable
 RUN printf 'server {\n\
-    listen $PORT;\n\
+    listen 8080;\n\
     location / {\n\
         root /usr/share/nginx/html;\n\
         index index.html;\n\
         try_files $uri /index.html;\n\
     }\n\
-}\n' > /etc/nginx/conf.d/default.conf.template
+}\n' > /etc/nginx/conf.d/default.conf
 
-# Start NGINX with dynamic port substitution
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]
