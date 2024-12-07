@@ -22,9 +22,12 @@ FROM nginx:alpine
 # Copy built files from builder
 COPY --from=builder /chop-n-shop-frontend/build /usr/share/nginx/html
 
+# Set default PORT if not provided
+ENV PORT 80
+
 # Configure NGINX to read PORT from environment variable
 RUN printf 'server {\n\
-    listen 80;\n\
+    listen $PORT;\n\
     location / {\n\
         root /usr/share/nginx/html;\n\
         index index.html;\n\
