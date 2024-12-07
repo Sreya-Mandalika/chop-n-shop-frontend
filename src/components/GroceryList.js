@@ -448,7 +448,7 @@ function GroceryListForm() {
                             <span>{item.item_name || item.Item_name}</span>
                             <span>${item.price || item.Price}</span>
                             <button onClick={() => handleDeleteItem(list._id, item.item_name || item.Item_name)}
-                                className="ml-2 text-red-500 hover:text-red-700">Delete
+                                className="ml-2 text-red-500 hover:text-red-700">Remove
                               </button>
                           </div>
                         ))}
@@ -467,7 +467,7 @@ function GroceryListForm() {
                             <span>{item.item_name || item.Item_name}</span>
                             <span>${item.price || item.Price}</span>
                             <button onClick={() => handleDeleteItem(list._id, item.item_name || item.Item_name)}
-                                className="ml-2 text-red-500 hover:text-red-700">Delete
+                                className="ml-2 text-red-500 hover:text-red-700">Remove
                               </button>
                           </div>
                         ))}

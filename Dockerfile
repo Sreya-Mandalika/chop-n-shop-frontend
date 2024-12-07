@@ -1,5 +1,5 @@
-# Build stage
-FROM node:16-alpine as builder
+# Build Stage
+FROM node:16-alpine AS builder
 
 # Set working directory
 WORKDIR /chop-n-shop-frontend
@@ -13,24 +13,24 @@ RUN npm install
 # Copy all frontend files
 COPY . .
 
-# Build application
+# Build the application
 RUN npm run build
 
-# Runtime stage
+# Runtime Stage
 FROM nginx:alpine
 
 # Copy built files from builder
 COPY --from=builder /chop-n-shop-frontend/build /usr/share/nginx/html
 
-# Create nginx.conf that reads PORT environment variable from cloud run - google assigns random ports, so we need this
+# Configure NGINX to read PORT from environment variable
 RUN printf 'server {\n\
     listen 80;\n\
     location / {\n\
         root /usr/share/nginx/html;\n\
-        index index.html index.htm;\n\
-        try_files $uri $uri/ /index.html;\n\
+        index index.html;\n\
+        try_files $uri /index.html;\n\
     }\n\
 }\n' > /etc/nginx/conf.d/default.conf.template
 
-# Use shell to substitute PORT value in nginx.conf
-CMD sh -c "envsubst '\80' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+# Start NGINX with dynamic port substitution
+CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
