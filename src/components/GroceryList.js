@@ -64,29 +64,37 @@ function GroceryListForm() {
 
   const handleDeleteItem = async (listId, itemName) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
+      // Retrieve the email of the logged-in user from localStorage
+      const userEmail = localStorage.getItem('user_email');
+      if (!userEmail) {
+        throw new Error('User email not found. Please log in again.');
       }
   
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found. Please log in again.');
+      }
+  
+      // Make the DELETE request with the user email and token
       const response = await axios.delete(
-        `http://localhost:8000/grocery_lists/${listId}/items/${itemName}`,
+        `http://localhost:8000/grocery_lists/${listId}/items/${encodeURIComponent(itemName)}?user_email=${encodeURIComponent(userEmail)}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           }
         }
       );
   
       if (response.data) {
         setSuccessMessage('Item deleted successfully');
-        fetchUserGroceryLists(); // Refresh the list after deletion
+        fetchUserGroceryLists(); // Refresh the grocery lists
       }
     } catch (error) {
       setErrorMessage('Failed to delete item');
       console.error('Error:', error);
     }
   };
+  
 
   const handleDelete = async (listId) => {
     if (!listId) {
