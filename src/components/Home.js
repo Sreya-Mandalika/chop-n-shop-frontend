@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Import axios for fetching user data
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 function Home({ groceryData }) {
   const [userName, setUserName] = useState(''); // State to store the user's name

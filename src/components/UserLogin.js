@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { LucideUser, LucideKey } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '../Css/UserLogin.css';
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -61,20 +61,23 @@ const UserLogin = ({ onLoginOrSignup }) => {
         });
 
         const data = await response.json();
-
+        console.log(API);
         if (response.ok) {
           localStorage.setItem('user_email', formData.email);
           localStorage.setItem('user_name', data.first_name || ''); // Save user's name
           localStorage.setItem('token', data.access_token); // Save token
           setSuccessMessage('Login successful!');
+          console.log(API)
           onLoginOrSignup(data);
           navigate('/home'); // Navigate to home page
         } else {
           setError(data.detail || 'Login failed');
+          console.log(API)
         }
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
+      console.log(API)
       console.error(err);
     } finally {
       setLoading(false);
