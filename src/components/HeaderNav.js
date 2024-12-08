@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, User, Book, ShoppingCart } from 'lucide-react';
-
+import logo from '../img/logo.png';
 
 function Navigation() {
   const navItems = [
@@ -16,7 +16,10 @@ function Navigation() {
   return (
     <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
       <div className="w-full px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between font-inter border-b border-gray-200">
-        <h1 className="text-3xl font-bold text-gray-900">Chop N' Shop</h1>
+      <img
+          src={logo}
+          alt="Chop-n-Shop Logo"
+          className="logo w-16 sm:w-24 md:w-32 lg:w-40 xl:w-48 h-auto"/>
         <nav className="flex justify-around flex-1 max-w-7xl mx-auto px-4 py-2">
           {navItems.map(({ id, icon: Icon, label, path }) => (
             <Link

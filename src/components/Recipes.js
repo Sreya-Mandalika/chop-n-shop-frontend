@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../Css/Recipes.css';
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');

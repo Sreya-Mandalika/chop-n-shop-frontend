@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 function Profile() {
   const [userData, setUserData] = useState(null);
