@@ -51,7 +51,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
           setError(data.detail || 'Registration failed');
         }
       } else {
-        const response = await fetch(`${API}login/`, {
+        const response = await fetch(`${API}/login/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
