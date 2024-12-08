@@ -158,8 +158,8 @@ function Recipes() {
       )}
 
 
-    <div className="flex flex-col items-center justify-center min-h-screen py-8">
-      <h2 className="text-3xl font-bold text-center mb-8">Recipes</h2>
+    {/* <div className="flex flex-col items-center justify-center min-h-screen py-8"> */}
+      <h2 className="my-10 text-3xl font-bold text-center mb-8">Recipes</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-screen-xxl">
         {recipes.map((recipe, index) => (
           <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
@@ -176,7 +176,7 @@ function Recipes() {
       </div>
     </div>
 
-    </div>
+    // </div>
   );
 }
 
