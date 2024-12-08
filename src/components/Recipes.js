@@ -33,14 +33,22 @@ function Recipes() {
       setGenerateLoading(true);
       setError(null);
       setNewRecipeData(null);
-
+  
       try {
-        const response = await axios.post(`${API}/generate_recipe`, { prompt: generateSearchTerm });
+        const response = await axios.post(`${API}/generate_recipe/`, {
+          recipe_prompt: generateSearchTerm
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json'
+          }
+        });
         setNewRecipeData(response.data);
         setRecipes([response.data, ...recipes]);
       } catch (err) {
         setError('Error generating new recipe');
-        console.error('Error generating recipe:', err);
+        console.error('Error generating recipe:', err.response?.data || err.message);
+        console.error('Full error object:', err);
       } finally {
         setGenerateLoading(false);
       }
