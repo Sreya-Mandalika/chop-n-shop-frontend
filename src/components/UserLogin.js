@@ -3,6 +3,8 @@ import { LucideUser, LucideKey } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '../Css/UserLogin.css';
 const API = process.env.REACT_APP_BACKEND_URL;
+console.log(API);
+
 
 const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
