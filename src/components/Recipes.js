@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../Css/Recipes.css';
+
 const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 function Recipes() {
@@ -20,7 +21,7 @@ function Recipes() {
 
   const fetchRecipes = async () => {
     try {
-      const response = await axios.get(`${API}/recipes`);
+      const response = await axios.get(`${API}/recipes/`);
       setRecipes(response.data);
     } catch (error) {
       console.error('Error fetching recipes:', error);
@@ -44,7 +45,7 @@ function Recipes() {
           }
         });
         setNewRecipeData(response.data);
-        setRecipes([response.data, ...recipes]);
+        setRecipes([response.data.recipe, ...recipes]);
       } catch (err) {
         setError('Error generating new recipe');
         console.error('Error generating recipe:', err.response?.data || err.message);
@@ -63,7 +64,7 @@ function Recipes() {
       setExistingRecipeData(null);
 
       try {
-        const response = await axios.get(`${API}/recipes/${searchSearchTerm}`);
+        const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
         setExistingRecipeData(response.data);
       } catch (err) {
         setError('Recipe not found or error occurred');
@@ -78,9 +79,35 @@ function Recipes() {
     setExpandedRecipe(expandedRecipe === index ? null : index);
   };
 
+  const renderRecipe = (recipe) => {
+    if (!recipe) return null;
+
+    return (
+      <div className="mt-8 px-4">
+        <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
+        <h3 className="text-xl font-semibold mt-4 mb-2">Ingredients:</h3>
+        <ul className="list-disc pl-5 mb-4">
+          {recipe.ingredients.map((ingredient, index) => (
+            <li key={index}>{ingredient}</li>
+          ))}
+        </ul>
+        <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
+        <ol className="list-decimal pl-5 mb-4">
+          {recipe.instructions.map((instruction, index) => (
+            <li key={index} className="mb-2">{instruction}</li>
+          ))}
+        </ol>
+        <div className="mt-4">
+          <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
+          <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
+          <p><strong>Total Time:</strong> {recipe.total_time}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="font-inter bg-white min-h-screen">
-      {/* Hero Section with Background Image */}
       <div
         className="relative w-full h-[35rem] bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: 'url("https://foodconfidence.com/wp-content/uploads/2019/06/AdobeStock_163417612.jpeg")' }}
@@ -89,7 +116,6 @@ function Recipes() {
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-4xl font-bold mb-4">Create and Search for Recipes</h1>
           <div className="flex flex-col gap-4 justify-center mb-4 max-w-md mx-auto">
-            {/* Generate New Recipe form */}
             <form onSubmit={handleGenerateRecipeSubmit} className="flex flex-col gap-2">
               <input
                 type="text"
@@ -103,7 +129,6 @@ function Recipes() {
               </button>
             </form>
             
-            {/* Search Existing Recipe form */}
             <form onSubmit={handleSearchRecipeSubmit} className="flex flex-col gap-2">
               <input
                 type="text"
@@ -120,21 +145,10 @@ function Recipes() {
         </div>
       </div>
 
-      {/* Display error message if any */}
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-      {/* Display generated or searched recipe */}
-      {(newRecipeData || existingRecipeData) && (
-        <div className="mt-8 px-4">
-          <h2 className="text-2xl font-bold mb-4">
-            {newRecipeData ? 'Generated Recipe' : 'Found Recipe'}: {newRecipeData?.name || existingRecipeData?.name}
-          </h2>
-          <p>{newRecipeData?.instructions || existingRecipeData?.instructions}</p>
-          {/* Display other recipe details here */}
-        </div>
-      )}
+      {renderRecipe(newRecipeData?.recipe || existingRecipeData)}
 
-      {/* Display existing recipes */}
       <div id="main-content" className="container mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold mb-4">Recipes</h2>
         {recipes.map((recipe, index) => (
@@ -143,12 +157,7 @@ function Recipes() {
             <button onClick={() => toggleExpandRecipe(index)} className="mt-2 text-blue-500">
               {expandedRecipe === index ? 'Show Less' : 'Show More'}
             </button>
-            {expandedRecipe === index && (
-              <div className="mt-2">
-                <p><strong>Instructions:</strong> {recipe.instructions}</p>
-                {/* Display other recipe details here */}
-              </div>
-            )}
+            {expandedRecipe === index && renderRecipe(recipe)}
           </div>
         ))}
       </div>
