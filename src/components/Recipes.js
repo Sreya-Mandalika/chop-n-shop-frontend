@@ -66,6 +66,7 @@ function Recipes() {
       try {
         const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
         setExistingRecipeData(response.data);
+        console.log('Search response:', response.data); // Log the response data
       } catch (err) {
         setError('Recipe not found or error occurred');
         console.error('Error searching recipe:', err);
@@ -88,7 +89,11 @@ function Recipes() {
         <h3 className="text-xl font-semibold mt-4 mb-2">Ingredients:</h3>
         <ul className="list-disc pl-5 mb-4">
           {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
+            <li key={index}>
+              {typeof ingredient === 'string' 
+                ? ingredient 
+                : `${ingredient.item || ingredient.name} - ${ingredient.quantity || ''}`}
+            </li>
           ))}
         </ul>
         <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
