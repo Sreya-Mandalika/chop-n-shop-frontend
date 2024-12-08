@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../Css/Recipes.css';
+// import '../Css/Recipes.css';
 
 const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
-
+// const API = "http:localhost//8000"
 function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');
   const [searchSearchTerm, setSearchSearchTerm] = useState('');
@@ -66,7 +66,6 @@ function Recipes() {
       try {
         const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
         setExistingRecipeData(response.data);
-        console.log('Search response:', response.data); // Log the response data
       } catch (err) {
         setError('Recipe not found or error occurred');
         console.error('Error searching recipe:', err);
@@ -82,37 +81,37 @@ function Recipes() {
 
   const renderRecipe = (recipe) => {
     if (!recipe) return null;
-
+  
     return (
-      <div className="mt-8 px-4">
-        <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
-        <h3 className="text-xl font-semibold mt-4 mb-2">Ingredients:</h3>
-        <ul className="list-disc pl-5 mb-4">
-          {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>
-              {typeof ingredient === 'string' 
-                ? ingredient 
-                : `${ingredient.item || ingredient.name} - ${ingredient.quantity || ''}`}
-            </li>
-          ))}
-        </ul>
-        <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
-        <ol className="list-decimal pl-5 mb-4">
-          {recipe.instructions.map((instruction, index) => (
-            <li key={index} className="mb-2">{instruction}</li>
-          ))}
-        </ol>
-        <div className="mt-4">
-          <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
-          <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
-          <p><strong>Total Time:</strong> {recipe.total_time}</p>
+      <div className="flex justify-center items-center py-8 min-h-screen">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg text-center">
+          <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
+          <h3 className="text-xl font-semibold mt-4 mb-2">Ingredients:</h3>
+          <ul className="list-disc pl-5 mb-4 text-gray-700">
+            {recipe.ingredients.map((ingredient, index) => (
+              <li key={index}>{ingredient}</li>
+            ))}
+          </ul>
+          <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
+          <ol className="list-decimal pl-5 mb-4 text-gray-700">
+            {recipe.instructions.map((instruction, index) => (
+              <li key={index} className="mb-2">{instruction}</li>
+            ))}
+          </ol>
+          <div className="mt-4">
+            <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
+            <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
+            <p><strong>Total Time:</strong> {recipe.total_time}</p>
+          </div>
         </div>
       </div>
     );
   };
+  
+  
 
   return (
-    <div className="font-inter bg-white min-h-screen">
+    <div className="font-inter bg-gray-50 min-h-screen">
       <div
         className="relative w-full h-[35rem] bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: 'url("https://foodconfidence.com/wp-content/uploads/2019/06/AdobeStock_163417612.jpeg")' }}
@@ -129,7 +128,7 @@ function Recipes() {
                 onChange={(e) => setGenerateSearchTerm(e.target.value)}
                 className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-black"
               />
-              <button type="submit" className="bg-spotifyGreen text-white px-4 py-2 rounded-lg shadow" disabled={generateLoading}>
+              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-lg shadow" disabled={generateLoading}>
                 {generateLoading ? 'Generating...' : 'Generate Recipe'}
               </button>
             </form>
@@ -152,20 +151,31 @@ function Recipes() {
 
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-      {renderRecipe(newRecipeData?.recipe || existingRecipeData)}
+      {existingRecipeData && (
+        <div className="flex justify-center items-center my-8">
+          {renderRecipe(existingRecipeData)}
+        </div>
+      )}
 
-      <div id="main-content" className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-4">Recipes</h2>
+
+    <div className="flex flex-col items-center justify-center min-h-screen py-8">
+      <h2 className="text-3xl font-bold text-center mb-8">Recipes</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-screen-xxl">
         {recipes.map((recipe, index) => (
-          <div key={index} className="mb-4 p-4 border rounded shadow">
+          <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">{recipe.name}</h3>
-            <button onClick={() => toggleExpandRecipe(index)} className="mt-2 text-blue-500">
+            <button
+              onClick={() => toggleExpandRecipe(index)}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            >
               {expandedRecipe === index ? 'Show Less' : 'Show More'}
             </button>
-            {expandedRecipe === index && renderRecipe(recipe)}
+            {expandedRecipe === index && <div className="mt-4">{renderRecipe(recipe)}</div>}
           </div>
         ))}
       </div>
+    </div>
+
     </div>
   );
 }
