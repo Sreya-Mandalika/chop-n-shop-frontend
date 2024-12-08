@@ -35,7 +35,7 @@ function Recipes() {
       setNewRecipeData(null);
 
       try {
-        const response = await axios.post(`${API}/generate_recipe`, { prompt: generateSearchTerm });
+        const response = await axios.post(`${API}/generate_recipe/`, { prompt: generateSearchTerm });
         setNewRecipeData(response.data);
         setRecipes([response.data, ...recipes]);
       } catch (err) {
@@ -55,7 +55,7 @@ function Recipes() {
       setExistingRecipeData(null);
 
       try {
-        const response = await axios.get(`${API}/recipes/${searchSearchTerm}`);
+        const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
         setExistingRecipeData(response.data);
       } catch (err) {
         setError('Recipe not found or error occurred');
