@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../Css/Recipes.css';
+const API = process.env.REACT_APP_BACKEND_URL;
 
 function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');
@@ -19,7 +20,7 @@ function Recipes() {
 
   const fetchRecipes = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/recipes');
+      const response = await axios.get(`${API}/recipes`);
       setRecipes(response.data);
     } catch (error) {
       console.error('Error fetching recipes:', error);
@@ -34,7 +35,7 @@ function Recipes() {
       setNewRecipeData(null);
 
       try {
-        const response = await axios.post('http://localhost:8000/generate_recipe', { prompt: generateSearchTerm });
+        const response = await axios.post(`${API}/generate_recipe`, { prompt: generateSearchTerm });
         setNewRecipeData(response.data);
         setRecipes([response.data, ...recipes]);
       } catch (err) {
@@ -54,7 +55,7 @@ function Recipes() {
       setExistingRecipeData(null);
 
       try {
-        const response = await axios.get(`http://localhost:8000/recipes/${searchSearchTerm}`);
+        const response = await axios.get(`${API}/recipes/${searchSearchTerm}`);
         setExistingRecipeData(response.data);
       } catch (err) {
         setError('Recipe not found or error occurred');

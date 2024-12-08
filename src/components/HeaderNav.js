@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, User, Book, ShoppingCart } from 'lucide-react';
 
+
 function Navigation() {
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/home' },

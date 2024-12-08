@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Import axios for fetching user data
+const API = process.env.REACT_APP_BACKEND_URL;
 
 function Home({ groceryData }) {
   const [userName, setUserName] = useState(''); // State to store the user's name
@@ -13,7 +14,7 @@ function Home({ groceryData }) {
         const userEmail = localStorage.getItem('user_email');
         if (!userEmail) return;
 
-        const response = await axios.get('http://localhost:8000/api/user', {
+        const response = await axios.get(`${API}/api/user`, {
           params: { user_email: userEmail },
         });
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LucideUser, LucideKey } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '../Css/UserLogin.css';
+const API = process.env.REACT_APP_BACKEND_URL;
 
 const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -29,7 +30,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
 
     try {
       if (isNewUser) {
-        const response = await fetch('http://localhost:8000/register/', {
+        const response = await fetch(`${API}/register/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -50,7 +51,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
           setError(data.detail || 'Registration failed');
         }
       } else {
-        const response = await fetch('http://localhost:8000/login/', {
+        const response = await fetch(`${API}/login/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

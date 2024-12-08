@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
+const API = process.env.REACT_APP_BACKEND_URL;
 
 function Profile() {
   const [userData, setUserData] = useState(null);
@@ -17,7 +18,7 @@ function Profile() {
           throw new Error('User not logged in');
         }
 
-        const response = await axios.get('http://localhost:8000/api/user', {
+        const response = await axios.get(`${API}/api/user`, {
           params: { user_email: userEmail },
         });
 

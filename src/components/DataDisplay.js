@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API = process.env.REACT_APP_BACKEND_URL;
 
 function DataDisplay({ searchTerm }) {
   const [recipe, setRecipe] = useState(null);
@@ -12,7 +13,7 @@ function DataDisplay({ searchTerm }) {
 
     try {
       // Make POST request to generate a recipe
-      const response = await axios.post('http://localhost:8000/generate_recipe/', {
+      const response = await axios.post(`${API}/generate_recipe/`, {
         recipe_prompt: searchTerm, // Send user prompt
       });
 
