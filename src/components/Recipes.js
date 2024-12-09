@@ -3,6 +3,7 @@ import axios from 'axios';
 // import '../Css/Recipes.css';
 
 const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+console.log('API constant:', API);
 // const API = "http:localhost//8000"
 function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');
@@ -44,6 +45,12 @@ function Recipes() {
     localStorage.setItem('recipes', JSON.stringify(recipes));
   }, [recipes]);
 
+  useEffect(() => {
+    console.log('Recipes component mounted');
+    console.log('API URL:', API);
+    console.log('Initial recipes state:', recipes);
+  }, []);
+
   const simulateLoading = () => {
     setLoadingProgress(0);
     let punIndex = 0;
@@ -55,14 +62,14 @@ function Recipes() {
           clearInterval(interval);
           return 100;
         }
-        const newProgress = oldProgress + 1; // Slower progress
-        if (newProgress % 5 === 0) { // Change pun more frequently
+        const newProgress = oldProgress + 2; // Increased from 1 to 2
+        if (newProgress % 10 === 0) { // Changed from 5 to 10
           punIndex = (punIndex + 1) % foodPuns.length;
           setCurrentPun(foodPuns[punIndex]);
         }
         return newProgress;
       });
-    }, 190); // Adjusted to make total time about 19 seconds
+    }, 140); // Reduced from 190 to 140
   
     return () => clearInterval(interval);
   };
@@ -107,13 +114,18 @@ function Recipes() {
   
   const handleGenerateRecipeSubmit = async (e) => {
     e.preventDefault();
+    console.log('Generate button clicked');
+    console.log('Current generateSearchTerm:', generateSearchTerm);
+  
     if (generateSearchTerm.trim()) {
       setGenerateLoading(true);
       setError(null);
   
+      console.log('Before API call');
       const cleanupLoading = simulateLoading();
   
       try {
+        console.log('Making API call to:', `${API}/generate_recipe/`);
         const response = await axios.post(`${API}/generate_recipe/`, {
           recipe_prompt: generateSearchTerm
         }, {
@@ -122,15 +134,20 @@ function Recipes() {
             'accept': 'application/json'
           }
         });
-        // Add the new recipe to the beginning of the recipes array
+        console.log('API response received:', response.data);
         setRecipes(prevRecipes => [response.data.recipe, ...prevRecipes]);
       } catch (err) {
-        setError('Error generating new recipe');
-        console.error('Error generating recipe:', err.response?.data || err.message);
+        console.error('Error in API call:', err);
+        console.error('Error response:', err.response);
+        console.error('Error request:', err.request);
+        setError('Error generating new recipe: ' + (err.response?.data?.message || err.message));
       } finally {
         setGenerateLoading(false);
         cleanupLoading();
+        console.log('Generate process completed');
       }
+    } else {
+      console.log('Generate search term is empty');
     }
   };
 
@@ -158,30 +175,44 @@ function Recipes() {
             onClick={() => toggleExpandRecipe(index)}
             className="text-blue-500 hover:text-blue-700"
           >
-            Show Less
+            {expandedRecipes.includes(index) ? 'Show Less' : 'Show More'}
           </button>
         </div>
-        <h3 className="text-xl font-semibold mt-2 mb-2">Ingredients:</h3>
-        <ul className="list-disc pl-5 mb-4 text-gray-700">
-          {recipe.ingredients.map((ingredient, idx) => (
-            <li key={idx}>
-              {typeof ingredient === 'string' 
-                ? ingredient 
-                : `${ingredient.quantity} ${ingredient.ingredient}`}
-            </li>
-          ))}
-        </ul>
-        <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
-        <ol className="list-decimal pl-5 mb-4 text-gray-700">
-          {recipe.instructions.map((instruction, idx) => (
-            <li key={idx} className="mb-2">{instruction}</li>
-          ))}
-        </ol>
-        <div className="mt-4">
-          <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
-          <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
-          <p><strong>Total Time:</strong> {recipe.total_time}</p>
-        </div>
+        {expandedRecipes.includes(index) && (
+          <>
+            <h3 className="text-xl font-semibold mt-2 mb-2">Ingredients:</h3>
+            {recipe.ingredients && recipe.ingredients.length > 0 ? (
+              <ul className="list-disc pl-5 mb-4 text-gray-700">
+                {recipe.ingredients.map((ingredient, idx) => (
+                  <li key={idx}>
+                    {typeof ingredient === 'string' 
+                      ? ingredient 
+                      : ingredient && ingredient.quantity && ingredient.ingredient
+                        ? `${ingredient.quantity} ${ingredient.ingredient}`
+                        : 'Ingredient details not available'}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mb-4 text-gray-700">No ingredients available for this recipe.</p>
+            )}
+            <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
+            {recipe.instructions && recipe.instructions.length > 0 ? (
+              <ol className="list-decimal pl-5 mb-4 text-gray-700">
+                {recipe.instructions.map((instruction, idx) => (
+                  <li key={idx} className="mb-2">{instruction}</li>
+                ))}
+              </ol>
+            ) : (
+              <p className="mb-4 text-gray-700">No instructions available for this recipe.</p>
+            )}
+            <div className="mt-4">
+              <p><strong>Prep Time:</strong> {recipe.prep_time || 'Not specified'}</p>
+              <p><strong>Cook Time:</strong> {recipe.cook_time || 'Not specified'}</p>
+              <p><strong>Total Time:</strong> {recipe.total_time || 'Not specified'}</p>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -220,11 +251,11 @@ function Recipes() {
                   <p className="mt-2 text-lg font-semibold text-white">{currentPun}</p>
                 </div>
               )}
-            
+          
               <button 
-                type="submit" 
-                className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition duration-300" 
+                onClick={handleGenerateRecipeSubmit}
                 disabled={generateLoading}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition duration-300"
               >
                 {generateLoading ? 'Generating...' : 'Generate Recipe'}
               </button>
