@@ -52,7 +52,7 @@ function GroceryListForm() {
       }
   
       const response = await axios.put(
-        `${API}/grocery_lists/${listId}/add_item/`,
+        `${API}/grocery_lists/${listId}/add_item`,
         {
           Item_name: newItemName,
           Store_name: newItemStore,
@@ -92,7 +92,7 @@ function GroceryListForm() {
   
       // Make the DELETE request with the user email and token
       const response = await axios.delete(
-        `${API}/grocery_lists/${listId}/items/${encodeURIComponent(itemName)}?user_email=${encodeURIComponent(userEmail)}/`,
+        `${API}/grocery_lists/${listId}/items/${encodeURIComponent(itemName)}?user_email=${encodeURIComponent(userEmail)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,7 +123,7 @@ function GroceryListForm() {
         throw new Error('No token found');
       }
       
-      await axios.delete(`${API}/grocery_lists/${listId}/`, {
+      await axios.delete(`${API}/grocery_lists/${listId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -142,7 +142,7 @@ function GroceryListForm() {
         throw new Error('No token found');
       }
       
-      const response = await axios.get(`${API}/grocery_lists/`, {
+      const response = await axios.get(`${API}/grocery_lists`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -236,7 +236,7 @@ function GroceryListForm() {
     try {
       const endpoint =
         viewMode === 'recipe'
-          ? `${API}/generate_recipe_with_grocery_list/`
+          ? `${API}/generate_recipe_with_grocery_list`
           : `${API}/generate_grocery_list/`;
       const response = await axios.post(endpoint, payload, {
         headers: {
