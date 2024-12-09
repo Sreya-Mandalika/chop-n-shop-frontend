@@ -7,7 +7,10 @@ const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');
   const [searchSearchTerm, setSearchSearchTerm] = useState('');
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState(() => {
+    const savedRecipes = localStorage.getItem('recipes');
+    return savedRecipes ? JSON.parse(savedRecipes) : [];
+  });
   const [error, setError] = useState(null);
   const [generateLoading, setGenerateLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -37,6 +40,10 @@ function Recipes() {
     "Just a pinch more patience..."
   ];
   
+  useEffect(() => {
+    localStorage.setItem('recipes', JSON.stringify(recipes));
+  }, [recipes]);
+
   const simulateLoading = () => {
     setLoadingProgress(0);
     let punIndex = 0;
@@ -127,6 +134,11 @@ function Recipes() {
     }
   };
 
+  const clearAllRecipes = () => {
+    setRecipes([]);
+    localStorage.removeItem('recipes');
+  };
+
   const toggleExpandRecipe = (index) => {
     setExpandedRecipes(prev => 
       prev.includes(index)
@@ -175,7 +187,6 @@ function Recipes() {
   };
   
   
-
   return (
     <div className="font-inter bg-gray-50 min-h-screen">
       <div
@@ -185,6 +196,9 @@ function Recipes() {
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-4xl font-bold mb-4">Create and Search for Recipes</h1>
+          <p className="text-lg mb-6">
+            Generate a new recipe or search for a recipe you've created before.
+          </p>
           <div className="flex flex-col gap-4 justify-center mb-4 max-w-md mx-auto">
             <form onSubmit={handleGenerateRecipeSubmit} className="flex flex-col gap-2">
               <input
@@ -236,7 +250,15 @@ function Recipes() {
 
       {/* Recipes section */}
       <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">Recipes</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Recipes</h2>
+          <button 
+            onClick={clearAllRecipes}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300"
+          >
+            Clear All Recipes
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recipes.map((recipe, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
