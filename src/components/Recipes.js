@@ -8,12 +8,57 @@ function Recipes() {
   const [generateSearchTerm, setGenerateSearchTerm] = useState('');
   const [searchSearchTerm, setSearchSearchTerm] = useState('');
   const [recipes, setRecipes] = useState([]);
-  const [newRecipeData, setNewRecipeData] = useState(null);
-  const [existingRecipeData, setExistingRecipeData] = useState(null);
   const [error, setError] = useState(null);
   const [generateLoading, setGenerateLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [expandedRecipe, setExpandedRecipe] = useState(null);
+  const [expandedRecipes, setExpandedRecipes] = useState([]);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [currentPun, setCurrentPun] = useState(null);
+  const foodPuns = [
+    "Lettuce begin!",
+    "This might take a pizza my time.",
+    "Don't go bacon my heart while you wait.",
+    "Donut worry, it's almost done!",
+    "I'm trying to ketchup with your request.",
+    "Olive the waiting game!",
+    "I'm not just winging it, I promise.",
+    "Hang in there, we're on a roll!",
+    "This process is a piece of cake.",
+    "We're really cooking now!",
+    "Whisk-ing up something special for you.",
+    "Simmering with anticipation...",
+    "Stirring up some culinary magic.",
+    "Brewing a delicious recipe for you.",
+    "Marinating on your request...",
+    "Spicing things up in the kitchen!",
+    "Seasoning your recipe to perfection.",
+    "Dishing out something tasty soon!",
+    "Your recipe is in the oven, almost ready!",
+    "Just a pinch more patience..."
+  ];
+  
+  const simulateLoading = () => {
+    setLoadingProgress(0);
+    let punIndex = 0;
+    setCurrentPun(foodPuns[punIndex]);
+    
+    const interval = setInterval(() => {
+      setLoadingProgress((oldProgress) => {
+        if (oldProgress >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        const newProgress = oldProgress + 1; // Slower progress
+        if (newProgress % 5 === 0) { // Change pun more frequently
+          punIndex = (punIndex + 1) % foodPuns.length;
+          setCurrentPun(foodPuns[punIndex]);
+        }
+        return newProgress;
+      });
+    }, 190); // Adjusted to make total time about 19 seconds
+  
+    return () => clearInterval(interval);
+  };
 
   useEffect(() => {
     fetchRecipes();
@@ -28,12 +73,38 @@ function Recipes() {
     }
   };
 
+  const handleSearchRecipeSubmit = async (e) => {
+    e.preventDefault();
+    if (searchSearchTerm.trim()) {
+      setSearchLoading(true);
+      setError(null);
+  
+      try {
+        const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
+        
+        // Check if the recipe already exists in the array
+        const recipeExists = recipes.some(recipe => recipe.name === response.data.name);
+        
+        // If the recipe doesn't exist, add it to the beginning of the recipes array
+        if (!recipeExists) {
+          setRecipes(prevRecipes => [response.data, ...prevRecipes]);
+        }
+      } catch (err) {
+        setError('Recipe not found or error occurred');
+        console.error('Error searching recipe:', err);
+      } finally {
+        setSearchLoading(false);
+      }
+    }
+  };
+  
   const handleGenerateRecipeSubmit = async (e) => {
     e.preventDefault();
     if (generateSearchTerm.trim()) {
       setGenerateLoading(true);
       setError(null);
-      setNewRecipeData(null);
+  
+      const cleanupLoading = simulateLoading();
   
       try {
         const response = await axios.post(`${API}/generate_recipe/`, {
@@ -44,65 +115,60 @@ function Recipes() {
             'accept': 'application/json'
           }
         });
-        setNewRecipeData(response.data);
-        setRecipes([response.data.recipe, ...recipes]);
+        // Add the new recipe to the beginning of the recipes array
+        setRecipes(prevRecipes => [response.data.recipe, ...prevRecipes]);
       } catch (err) {
         setError('Error generating new recipe');
         console.error('Error generating recipe:', err.response?.data || err.message);
-        console.error('Full error object:', err);
       } finally {
         setGenerateLoading(false);
-      }
-    }
-  };
-
-  const handleSearchRecipeSubmit = async (e) => {
-    e.preventDefault();
-    if (searchSearchTerm.trim()) {
-      setSearchLoading(true);
-      setError(null);
-      setExistingRecipeData(null);
-
-      try {
-        const response = await axios.get(`${API}/recipes/${searchSearchTerm}/`);
-        setExistingRecipeData(response.data);
-      } catch (err) {
-        setError('Recipe not found or error occurred');
-        console.error('Error searching recipe:', err);
-      } finally {
-        setSearchLoading(false);
+        cleanupLoading();
       }
     }
   };
 
   const toggleExpandRecipe = (index) => {
-    setExpandedRecipe(expandedRecipe === index ? null : index);
+    setExpandedRecipes(prev => 
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
   };
 
-  const renderRecipe = (recipe) => {
+  const renderRecipe = (recipe, index) => {
     if (!recipe) return null;
   
     return (
-      <div className="flex justify-center items-center py-8 min-h-screen">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg text-center">
-          <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
-          <h3 className="text-xl font-semibold mt-4 mb-2">Ingredients:</h3>
-          <ul className="list-disc pl-5 mb-4 text-gray-700">
-            {recipe.ingredients.map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
-            ))}
-          </ul>
-          <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
-          <ol className="list-decimal pl-5 mb-4 text-gray-700">
-            {recipe.instructions.map((instruction, index) => (
-              <li key={index} className="mb-2">{instruction}</li>
-            ))}
-          </ol>
-          <div className="mt-4">
-            <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
-            <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
-            <p><strong>Total Time:</strong> {recipe.total_time}</p>
-          </div>
+      <div className="bg-white p-6 rounded-lg shadow-lg text-left">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">{recipe.name}</h2>
+          <button 
+            onClick={() => toggleExpandRecipe(index)}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Show Less
+          </button>
+        </div>
+        <h3 className="text-xl font-semibold mt-2 mb-2">Ingredients:</h3>
+        <ul className="list-disc pl-5 mb-4 text-gray-700">
+          {recipe.ingredients.map((ingredient, idx) => (
+            <li key={idx}>
+              {typeof ingredient === 'string' 
+                ? ingredient 
+                : `${ingredient.quantity} ${ingredient.ingredient}`}
+            </li>
+          ))}
+        </ul>
+        <h3 className="text-xl font-semibold mt-4 mb-2">Instructions:</h3>
+        <ol className="list-decimal pl-5 mb-4 text-gray-700">
+          {recipe.instructions.map((instruction, idx) => (
+            <li key={idx} className="mb-2">{instruction}</li>
+          ))}
+        </ol>
+        <div className="mt-4">
+          <p><strong>Prep Time:</strong> {recipe.prep_time}</p>
+          <p><strong>Cook Time:</strong> {recipe.cook_time}</p>
+          <p><strong>Total Time:</strong> {recipe.total_time}</p>
         </div>
       </div>
     );
@@ -128,7 +194,24 @@ function Recipes() {
                 onChange={(e) => setGenerateSearchTerm(e.target.value)}
                 className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-black"
               />
-              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-lg shadow" disabled={generateLoading}>
+              
+              {generateLoading && (
+                <div className="mt-4 mb-4 text-center">
+                  <div className="w-full h-4 bg-gray-200 rounded-full">
+                    <div
+                      className="h-full bg-green-500 rounded-full transition-all duration-200 ease-linear"
+                      style={{ width: `${loadingProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="mt-2 text-lg font-semibold text-white">{currentPun}</p>
+                </div>
+              )}
+            
+              <button 
+                type="submit" 
+                className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition duration-300" 
+                disabled={generateLoading}
+              >
                 {generateLoading ? 'Generating...' : 'Generate Recipe'}
               </button>
             </form>
@@ -151,31 +234,37 @@ function Recipes() {
 
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-      {existingRecipeData && (
-        <div className="flex justify-center items-center my-8">
-          {renderRecipe(existingRecipeData)}
+      {/* Recipes section */}
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-4 text-center">Recipes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recipes.map((recipe, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2">{recipe.name}</h3>
+                {expandedRecipes.includes(index) ? (
+                  <>
+                    {renderRecipe(recipe, index)}
+                    <button
+                      onClick={() => toggleExpandRecipe(index)}
+                      className="mt-4 text-blue-500 hover:text-blue-700"
+                    >
+                      Show Less
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => toggleExpandRecipe(index)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    Show More
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-      )}
-
-
-    <div className="flex flex-col items-center justify-center min-h-screen py-8">
-      <h2 className="text-3xl font-bold text-center mb-8">Recipes</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-screen-xxl">
-        {recipes.map((recipe, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold">{recipe.name}</h3>
-            <button
-              onClick={() => toggleExpandRecipe(index)}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
-            >
-              {expandedRecipe === index ? 'Show Less' : 'Show More'}
-            </button>
-            {expandedRecipe === index && <div className="mt-4">{renderRecipe(recipe)}</div>}
-          </div>
-        ))}
       </div>
-    </div>
-
     </div>
   );
 }
