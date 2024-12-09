@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { LucideUser, LucideKey } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '../Css/UserLogin.css';
+import logo from '../img/logo.png';
+
 const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
 const UserLogin = ({ onLoginOrSignup }) => {
@@ -87,6 +89,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
   return (
     <div className="background-wrapper min-h-screen flex items-center justify-center">
       <div className="form-container bg-white p-8 rounded-lg shadow-xl w-full max-w-md bg-opacity-90">
+        <img src={logo} alt="logo" />
         <h2 className="text-2xl font-bold mb-6 text-center">{isNewUser ? 'Create an Account' : 'Login'}</h2>
 
         <form onSubmit={handleSubmit}>
