@@ -2,30 +2,38 @@ import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Import axios for fetching user data
-const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+const API = "http://localhost:8000"
 
-function Home({ groceryData }) {
-  const [userName, setUserName] = useState(''); // State to store the user's name
+function Home() {
+  const [userName, setUserName] = useState(''); 
+  const [userGroceryLists, setUserGroceryLists] = useState([]);
+  const [selectedList, setSelectedList] = useState(null);
 
   useEffect(() => {
-    // Fetch the user's name
-    const fetchUserName = async () => {
+    
+    const fetchUserData = async () => {
       try {
         const userEmail = localStorage.getItem('user_email');
-        if (!userEmail) return;
+        const token = localStorage.getItem('token');
+        if (!userEmail || !token) return;
 
-        const response = await axios.get(`${API}/api/user`, {
+        const userResponse = await axios.get(`${API}/api/user`, {
           params: { user_email: userEmail },
+          headers: { Authorization: `Bearer ${token}` }
         });
+        setUserName(userResponse.data.first_name || 'User');
 
-        const { first_name } = response.data;
-        setUserName(first_name || 'User');
+        const listsResponse = await axios.get(`${API}/grocery_lists`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUserGroceryLists(listsResponse.data.grocery_lists || []);
       } catch (err) {
         console.error('Failed to fetch user data:', err);
       }
     };
 
-    fetchUserName();
+    fetchUserData();
 
     const handleScroll = () => {
       const elements = document.querySelectorAll('.animate-fade-in-on-scroll');
@@ -44,6 +52,10 @@ function Home({ groceryData }) {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handleListClick = (list) => {
+    setSelectedList(list);
+  };
 
   return (
     <div className="font-inter bg-white min-h-screen">
@@ -75,48 +87,64 @@ function Home({ groceryData }) {
 
       {/* Main Content Section */}
       <div id="main-content" className="p-4 space-y-6">
-        {/* Current List Section */}
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in-on-scroll">
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-semibold text-gray-800">Current Shopping List</h2>
-            <button className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-spotifyGreen text-white rounded-lg hover:shadow-md">
-              <Plus className="h-5 w-5" />
-              <span>New</span>
-            </button>
+            <h2 className="text-3xl font-semibold text-gray-800">Your Grocery Lists</h2>
+            <Link to="/grocery-list">
+              <button className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-spotifyGreen text-white rounded-lg hover:shadow-md">
+                <Plus className="h-5 w-5" />
+                <span>New List</span>
+              </button>
+            </Link>
           </div>
 
-          {Object.entries(groceryData.stores).map(([store, data]) => (
-            <div key={store} className="bg-white rounded-lg shadow-md animate-fade-in-on-scroll">
-              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-xl font-semibold text-gray-800">{store}</h3>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {data.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition"
-                  >
-                    <div className="flex-1">
-                      <span className="font-medium text-gray-900">{item.name}</span>
-                      <span className="ml-2 text-sm text-gray-500">x{item.quantity}</span>
-                    </div>
-                    <span className="font-medium text-gray-900">
-                      ${item.price.toFixed(2)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="px-6 py-4 bg-gray-100 rounded-b-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="text-lg font-bold text-gray-900">
-                    ${data.total.toFixed(2)}
-                  </span>
+          {userGroceryLists.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {userGroceryLists.map((list) => (
+                <div
+                  key={list._id}
+                  className="bg-gray-50 rounded-lg shadow-md p-4 cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleListClick(list)}
+                >
+                  <h3 className="text-xl font-semibold text-gray-800">{list.list_name || 'Unnamed List'}</h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(list.created_at).toLocaleDateString()}
+                  </p>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <p className="text-gray-500">No grocery lists available. Create a new one!</p>
+          )}
         </div>
+
+        {selectedList && (
+          <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
+            <div className="bg-gray-50 rounded-lg shadow-md p-6">
+              <h2 className="text-3xl font-semibold text-gray-800 mb-4">{selectedList.list_name || 'Unnamed List'}</h2>
+              {Object.entries(selectedList).map(([store, storeData]) => {
+                if (store !== '_id' && store !== 'list_name' && store !== 'created_at' && storeData.items) {
+                  return (
+                    <div key={store} className="mb-4">
+                      <h3 className="text-xl font-semibold text-gray-800">{store}</h3>
+                      <ul className="list-disc pl-5">
+                        {storeData.items.map((item, idx) => (
+                          <li key={idx} className="text-gray-600">
+                            {item.item_name || item.Item_name}: ${parseFloat(item.price || item.Price).toFixed(2)}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-right font-semibold">
+                        Total: ${parseFloat(storeData.Total_Cost).toFixed(2)}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions Section */}
         <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">

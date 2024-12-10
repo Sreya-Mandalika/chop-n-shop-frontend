@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+const API = "http://localhost:8000"
 
 function DataDisplay({ searchTerm }) {
   const [recipe, setRecipe] = useState(null);

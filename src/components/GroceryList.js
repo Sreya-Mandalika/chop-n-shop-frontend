@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+const API = "http://localhost:8000"
 
 function GroceryListForm() {
   const [preferences, setPreferences] = useState({
@@ -90,7 +91,7 @@ function GroceryListForm() {
         throw new Error('Authentication token not found. Please log in again.');
       }
   
-      // Make the DELETE request with the user email and token
+    
       const response = await axios.delete(
         `${API}/grocery_lists/${listId}/items/${encodeURIComponent(itemName)}?user_email=${encodeURIComponent(userEmail)}`,
         {
@@ -102,7 +103,7 @@ function GroceryListForm() {
   
       if (response.data) {
         setSuccessMessage('Item deleted successfully');
-        fetchUserGroceryLists(); // Refresh the grocery lists
+        fetchUserGroceryLists(); 
       }
     } catch (error) {
       setErrorMessage('Failed to delete item');
@@ -151,7 +152,7 @@ function GroceryListForm() {
       if (response.data && response.data.grocery_lists) {
         const processedLists = response.data.grocery_lists.map(list => ({
           ...list,
-          items: list.items || [] // Ensure there's always an items array
+          items: list.items || [] 
         }));
         
         // Sort the lists by creation date, most recent first

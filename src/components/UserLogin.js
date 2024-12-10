@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import '../Css/UserLogin.css';
 import logo from '../img/logo.png';
 
-const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+const API = "http://localhost:8000"
 
 const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
