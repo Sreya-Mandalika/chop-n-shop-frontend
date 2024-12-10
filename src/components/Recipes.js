@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 // import '../Css/Recipes.css';
 
-// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
-const API = "http://localhost:8000"
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
+// const API = "http://localhost:8000"
 console.log('API constant:', API);
 // const API = "http:localhost//8000"
 function Recipes() {

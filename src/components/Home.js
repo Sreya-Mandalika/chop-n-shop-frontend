@@ -2,28 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Import axios for fetching user data
-// const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
-const API = "http://localhost:8000"
+const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
 
+// const API = "http://localhost:8000"
 function Home() {
-  const [userName, setUserName] = useState(''); 
+  const [userName, setUserName] = useState('');
   const [userGroceryLists, setUserGroceryLists] = useState([]);
   const [selectedList, setSelectedList] = useState(null);
-
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
-    
     const fetchUserData = async () => {
       try {
         const userEmail = localStorage.getItem('user_email');
         const token = localStorage.getItem('token');
         if (!userEmail || !token) return;
-
         const userResponse = await axios.get(`${API}/api/user`, {
           params: { user_email: userEmail },
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserName(userResponse.data.first_name || 'User');
-
         const listsResponse = await axios.get(`${API}/grocery_lists`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -32,9 +30,7 @@ function Home() {
         console.error('Failed to fetch user data:', err);
       }
     };
-
     fetchUserData();
-
     const handleScroll = () => {
       const elements = document.querySelectorAll('.animate-fade-in-on-scroll');
       elements.forEach((el) => {
@@ -44,23 +40,19 @@ function Home() {
         }
       });
     };
-
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Run on mount to catch any elements already in view
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
   const handleListClick = (list) => {
     setSelectedList(list);
   };
-
   return (
     <div className="font-inter bg-white min-h-screen">
       {/* Hero Section with Background Image */}
-      <div 
+      <div
         className="relative w-full h-screen bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: 'url("https://wallpapers.com/images/hd/color-scheme-vegetables-and-fruits-7mq9envdlh3ul5za.jpg")' }}  // Replace with your image URL
       >
@@ -84,7 +76,6 @@ function Home() {
           </div>
         </div>
       </div>
-
       {/* Main Content Section */}
       <div id="main-content" className="p-4 space-y-6">
         <div className="max-w-7xl mx-auto space-y-6 animate-fade-in-on-scroll">
@@ -97,7 +88,6 @@ function Home() {
               </button>
             </Link>
           </div>
-
           {userGroceryLists.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {userGroceryLists.map((list) => (
@@ -117,7 +107,6 @@ function Home() {
             <p className="text-gray-500">No grocery lists available. Create a new one!</p>
           )}
         </div>
-
         {selectedList && (
           <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
             <div className="bg-gray-50 rounded-lg shadow-md p-6">
@@ -145,7 +134,6 @@ function Home() {
             </div>
           </div>
         )}
-
         {/* Quick Actions Section */}
         <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -158,7 +146,6 @@ function Home() {
                   <p className="text-gray-600">Manage your current shopping list.</p>
                 </button>
               </Link>
-
               {/* Link to Recipe Book Page */}
               <Link to="/recipe-book">
                 <button className="p-6 w-full border rounded-lg text-left bg-gray-50 hover:bg-gray-100 transition">
@@ -169,7 +156,6 @@ function Home() {
             </div>
           </div>
         </div>
-
         {/* Recent Activity Section */}
         <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -189,5 +175,4 @@ function Home() {
     </div>
   );
 }
-
 export default Home;
