@@ -46,8 +46,20 @@ function Home() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-  const handleListClick = (list) => {
-    setSelectedList(list);
+  const handleListClick = async (list) => {
+    setLoading(true); // Start loading
+    setSelectedList(null); // Clear any previously selected list
+    try {
+      // Simulate or fetch list data
+      const listDetails = await new Promise((resolve) => {
+        setTimeout(() => resolve(list), 1000); // Simulate 1-second delay
+      });
+      setSelectedList(listDetails); // Set the selected list
+    } catch (error) {
+      console.error('Failed to load list details:', error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
   return (
     <div className="font-inter bg-white min-h-screen">
@@ -107,7 +119,11 @@ function Home() {
             <p className="text-gray-500">No grocery lists available. Create a new one!</p>
           )}
         </div>
-        {selectedList && (
+        {loading ? (
+          <div className="text-center text-gray-500 mt-8">
+            <p>Loading list details...</p>
+          </div>
+        ) : selectedList && (
           <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
             <div className="bg-gray-50 rounded-lg shadow-md p-6">
               <h2 className="text-3xl font-semibold text-gray-800 mb-4">{selectedList.list_name || 'Unnamed List'}</h2>
