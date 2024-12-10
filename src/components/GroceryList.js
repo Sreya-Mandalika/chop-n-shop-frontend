@@ -298,8 +298,8 @@ function GroceryListForm() {
   };
 
   return (
-    <div className="flex gap-3 p-6 bg-gray-100 min-h-screen">
-      <div className="flex-1 max-w p-6 bg-white shadow-lg rounded-lg">
+    <div className="flex gap-3 p-6 bg-gray-100">
+      <div className="flex-1 p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Generate Your Grocery List</h2>
         <p className="text-md text-gray-800 mb-4">Click the recipe tab to create a list from a past recipe, or click the items tab to create a list from your own items!</p>
         <div className="flex justify-between mb-6">
