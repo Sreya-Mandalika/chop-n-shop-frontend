@@ -119,12 +119,8 @@ function Home() {
             <p className="text-gray-500">No grocery lists available. Create a new one!</p>
           )}
         </div>
-        {loading ? (
-          <div className="text-center text-gray-500 mt-8">
-            <p>Loading list details...</p>
-          </div>
-        ) : selectedList && (
-          <div className="max-w-7xl mx-auto animate-fade-in-on-scroll">
+        {selectedList && (
+          <div className="max-w-7xl mx-auto">
             <div className="bg-gray-50 rounded-lg shadow-md p-6">
               <h2 className="text-3xl font-semibold text-gray-800 mb-4">{selectedList.list_name || 'Unnamed List'}</h2>
               {Object.entries(selectedList).map(([store, storeData]) => {

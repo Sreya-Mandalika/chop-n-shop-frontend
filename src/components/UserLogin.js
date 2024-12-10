@@ -5,7 +5,6 @@ import '../Css/UserLogin.css';
 import logo from '../img/logo.png';
 
 const API = "https://chop-n-shop-backend-534070775559.us-central1.run.app"
-// const API = "http://localhost:8000"
 
 const UserLogin = ({ onLoginOrSignup }) => {
   const [isNewUser, setIsNewUser] = useState(false);
@@ -89,7 +88,7 @@ const UserLogin = ({ onLoginOrSignup }) => {
 
   return (
     <div className="background-wrapper min-h-screen flex items-center justify-center">
-      <div className="form-container bg-white p-8 rounded-lg shadow-xl w-full max-w-md bg-opacity-90 mr-[850px]">
+      <div className="form-container bg-white p-8 rounded-lg shadow-xl w-full max-w-md bg-opacity-90 mr-[850px] mt-[-100px]">
         <img src={logo} alt="logo" />
         <h2 className="text-2xl font-bold mb-6 text-center">{isNewUser ? 'Create an Account' : 'Login'}</h2>
 
