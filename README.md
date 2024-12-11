@@ -22,7 +22,7 @@ npm start
 ```
 This will start the React development server and the frontend will be available at http://localhost:3000.
 
-#### 4. Connecting with the backend
+#### 4. Connecting with the Backend
 Please start the backend api (https://github.com/gunjan2713/Chop-n-shop-backend) and make sure to follow the setup instructions to make sure its running simultaneously with the frontend.
 
 ---------------------------------------------
