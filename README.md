@@ -1,4 +1,4 @@
-# Chop N' Shop Week 9: Full Stack
+# Welcome to the Chop N' Shop Frontend!
 This is prototype fullstack application for Chop N' Shop, our grocery shopping assistant. We integrated several of our **FastAPI** endpoints with our **MongoDB** database and Frontend components. This prototype will allow you to register a new user, authenticate an existing user, and retrieve a recipe.
 
 This project communicates with a FastAPI API for its backend, and the relevant routes it accesses are documented in the README- https://github.com/dimash-web/chop-n-shop-database/blob/main/README.md of our backend repository.
@@ -15,16 +15,16 @@ cd chop-n-shop-frontend
 Navigate to the project directory and install the necessary dependencies using npm:
 ```
 npm install
-npm install react@18.2.0 react-dom@18.2.0 react-router-dom@6.14.0
-npm install lucide-react
-npm install -D tailwindcss postcss autoprefixer
-npm install @radix-ui/react-icons class-variance-authority clsx tailwindcss-animate @shadcn/ui
+
 ```
 #### 3. Run the Frontend
 ```
 npm start
 ```
 This will start the React development server and the frontend will be available at http://localhost:3000.
+
+#### 4. Connecting with the backend
+Please start the backend api (https://github.com/gunjan2713/Chop-n-shop-backend) and make sure to follow the setup instructions to make sure its running simultaneously with the frontend.
 
 ---------------------------------------------
 
@@ -86,21 +86,3 @@ We worked on developing an inital draft of our React app frontend to showcase Ch
 **Perplexity Integration:** Perplexity was specifically used to generate code for the layout, providing guidance on structuring and aligning components effectively. It also helped with the tailwind CSS.    
 
 **Mock Data Generation:** AI assistance was used to create mock data that simulates API responses.
-
-## Project Setup
-To set up and run the project locally, follow these steps:
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Sreya-Mandalika/chop-n-shop-frontend.git
-   cd chop-n-shop-frontend
-3. **Install necessary package requirements:**
-   ```bash
-   npm install
-   npm install react@latest react-dom@latest
-   npm install lucide-react
-   npm install -D tailwindcss postcss autoprefixer
-   npm install @radix-ui/react-icons class-variance-authority clsx tailwindcss-animate @shadcn/ui
-2. **Run the application:** 
-     ```bash
-      npm start
