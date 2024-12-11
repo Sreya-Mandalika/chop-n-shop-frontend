@@ -1,5 +1,5 @@
 # Welcome to the Chop N' Shop Frontend!
-This is prototype fullstack application for Chop N' Shop, our grocery shopping assistant. We integrated several of our **FastAPI** endpoints with our **MongoDB** database and Frontend components. This prototype will allow you to register a new user, authenticate an existing user, and retrieve a recipe.
+This is the frontend of our prototype fullstack application for Chop N' Shop, our grocery shopping assistant. We integrated several of our **FastAPI** endpoints with our **MongoDB** database and Frontend components. This prototype will allow you to register a new user, authenticate an existing user, and retrieve a recipe.
 
 This project communicates with a FastAPI API for its backend, and the relevant routes it accesses are documented in the README- https://github.com/dimash-web/chop-n-shop-database/blob/main/README.md of our backend repository.
 
@@ -15,7 +15,6 @@ cd chop-n-shop-frontend
 Navigate to the project directory and install the necessary dependencies using npm:
 ```
 npm install
-
 ```
 #### 3. Run the Frontend
 ```
